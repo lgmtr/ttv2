@@ -17,7 +17,7 @@ public class NetworkInterfaceModell {
 
 	private List<String> networkInterfaceInetAddresses;
 
-	private static final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+	public static final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
 
 	public NetworkInterfaceModell(String networkInterfaceName, String networkInterfaceDisplayName, List<String> networkInterfaceInetAddresses) {
 		this.networkInterfaceName = networkInterfaceName;
