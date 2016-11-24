@@ -48,7 +48,7 @@ public class MainGUI extends Application {
 	private JoiningThread jt;
 	private Thread t;
 
-	protected TextArea outputTextArea;
+	public TextArea outputTextArea;
 
 	private static MainGUI instance = null;
 
@@ -143,6 +143,13 @@ public class MainGUI extends Application {
 				chordImpl.leave();
 				System.exit(0);
 				System.out.println("Application Closed");
+			}
+		}), createButton("Broadcast", 190, 40, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				Set<de.uniba.wiai.lspi.chord.com.Node> fingerSet = new HashSet<de.uniba.wiai.lspi.chord.com.Node>(chordImpl.getFingerTable());
+				for(de.uniba.wiai.lspi.chord.com.Node n : fingerSet)
+					chordImpl.broadcast(n.getNodeID(), false);
 			}
 		}));
 	}
