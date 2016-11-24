@@ -30,6 +30,7 @@ package de.uniba.wiai.lspi.chord.service.impl;
 import static de.uniba.wiai.lspi.util.logging.Logger.LogLevel.DEBUG;
 import static de.uniba.wiai.lspi.util.logging.Logger.LogLevel.INFO;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -428,15 +429,71 @@ public final class NodeImpl extends Node {
 	
 	// TODO: implement this function in TTP
 	@Override
-	public final void broadcast(Broadcast info) throws CommunicationException {
-		if (this.logger.isEnabledFor(DEBUG)) {
-			this.logger.debug(" Send broadcast message");
-		}
-		
-		// finally inform application
-		if (this.notifyCallback != null) {
-			this.notifyCallback.broadcast(info.getSource(), info.getTarget(), info.getHit());
-		}
-	}
+    public final void broadcast(Broadcast info) {
+        if (this.logger.isEnabledFor(DEBUG)) {
+            this.logger.debug(" Send broadcast message");
+        }
+        if (impl.getLastReceivedTransactionID() < info.getTransaction()) {
+            impl.setLastReceivedTransactionID(info.getTransaction());
+            return;
+        }
+
+        List<Node> fingerTable = this.impl.getFingerTable();
+
+        Collections.sort(fingerTable);
+        ID range = info.getRange();
+        for (int i = 0; i < fingerTable.size(); i++) {
+            ID entryID = fingerTable.get(i).getNodeID();
+            if (entryID.isInInterval(this.getNodeID(), range) || entryID.equals(range)) {
+                // entryID after this, before range
+                ID newRange = null;
+                // if there is entries left after node
+                if (i < fingerTable.size() - 1) {
+                    //potentielle neue range ist die nächste node im table
+                    ID potentialNext = fingerTable.get(i + 1).getNodeID();
+                    if(potentialNext.isInInterval(entryID, range) || potentialNext.equals(range)){
+                        newRange = potentialNext;
+                    }
+                    else{
+                        newRange = range;
+                    }
+                } else if (i == fingerTable.size() - 1) {
+                    ID potentialNext = fingerTable.get(0).getNodeID();
+                    if(potentialNext.isInInterval(entryID, range) || potentialNext.equals(range)){
+                        newRange = potentialNext;
+                    }
+                    else{
+                        newRange = range;
+                    }
+                }
+                Broadcast b = new Broadcast(newRange, info.getSource(), info.getTarget(), info.getTransaction(),
+                        info.getHit());
+                Node n = fingerTable.get(i);
+                asyncBroadcast(b, n);
+            } else if (entryID.isInInterval(range, this.getNodeID()) || entryID.equals(this.getNodeID())) {
+                // entry = this OR after range and before this => do nothing
+            }
+        }
+
+        // notify game logic
+        if (this.notifyCallback != null) {
+            this.notifyCallback.broadcast(info.getSource(), info.getTarget(), info.getHit());
+//            this.notifyCallback.broadcast(info);
+        }
+
+    }
+
+    public void asyncBroadcast(final Broadcast bc, final Node n) {
+        System.out.println("Attempting asynchronous re-broadcast!");
+        this.asyncExecutor.execute(new Runnable() {
+            public void run() {
+                try {
+                    n.broadcast(bc);
+                } catch (Throwable th) {
+                    th.printStackTrace();
+                }
+            }
+        });
+    }
 
 }
