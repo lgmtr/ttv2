@@ -31,9 +31,9 @@ import static de.uniba.wiai.lspi.util.logging.Logger.LogLevel.DEBUG;
 import static de.uniba.wiai.lspi.util.logging.Logger.LogLevel.INFO;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -146,6 +146,8 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 	 */
 	private ExecutorService asyncExecutor;
 
+	private int lastReceivedTransactionID;
+	
 	/**
 	 * ThreadFactory used with Executor services.
 	 * 
@@ -276,6 +278,14 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 		this.logger = Logger.getLogger(ChordImpl.class.getName() + "." + this.localID);
 	}
 
+	public int getLastReceivedTransactionID() {
+        return lastReceivedTransactionID;
+    }
+
+    public void setLastReceivedTransactionID(int lastReceivedTransactionID) {
+        this.lastReceivedTransactionID = lastReceivedTransactionID;
+    }
+	
 	public final void create() throws ServiceException {
 
 		// is node already connected?
@@ -1017,15 +1027,40 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 	// send broadcast to all nodes in finger table
 	@Override
 	public void broadcast(ID target, Boolean hit) {
-		//retrieve(target);
-		try {
-			localNode.broadcast(new Broadcast(this.getID(), this.getID(), target, new Random()
-					.nextInt(Integer.MAX_VALUE / 2), hit));
-		} catch (CommunicationException e) {
-			e.printStackTrace();
-		}
-		this.logger.debug("App called broadcast");
+        this.logger.info("App called broadcast!");
+        System.out.println("App called broadcast!");
+        this.setLastReceivedTransactionID(getLastReceivedTransactionID() + 1);
 
+        List<Node> sortedNodes = this.getFingerTable(); // get nodes
+        Collections.sort(sortedNodes); // sort
+        for (int i = 0; i < sortedNodes.size(); i++) {
+
+            Node node = sortedNodes.get(i);
+            int turn = this.getLastReceivedTransactionID();
+            ID range = null;
+
+            // case: Node ist mein Predecessor
+            if (sortedNodes.get(i).getNodeID().equals(this.getPredecessorID())) {
+                range = this.getID();
+            }
+
+            // case: Range ist ID der nächsten node
+            if (i < sortedNodes.size() - 1) {
+                range = sortedNodes.get(i + 1).getNodeID();
+            } else {
+                range = sortedNodes.get(0).getNodeID();
+                // is predecessor in interval from last node to first node?
+                if (this.getPredecessorID().isInInterval(sortedNodes.get(i).getNodeID(),
+                        sortedNodes.get(0).getNodeID())) {
+                    range = this.getPredecessorID();
+                }
+            }
+            
+            Broadcast bc = new Broadcast(range, this.getID(), target, turn, hit);
+
+            this.asyncBroadcast(bc, node);
+
+        }
 	}
 
 	public void setCallback(NotifyCallback callback) {
@@ -1052,5 +1087,49 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 			this.localNode.clearCallback();
 		}
 	}
+	
+
+    public Node getSuccessor() {
+        return references.getSuccessor();
+    }
+
+    public List<Node> getSuccessors() {
+        return references.getSuccessors();
+    }
+
+    public References getReferences() {
+        return references;
+    }
+
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+
+    public URL getURL(ID id) {
+        URL url = null;
+        for (Node node : this.getReferences().getFingerTableCopy()) {
+            if (node != null && node.getNodeID().equals(id)) {
+                url = node.getNodeURL();
+            }
+        }
+        return url;
+    }
+
+    public void asyncBroadcast(final Broadcast bc, final Node n) {
+        System.out.println("Attempting asynchronous initial broadcast!");
+        this.asyncExecutor.execute(new Runnable() {
+            public void run() {
+                try {
+                    n.broadcast(bc);
+                } catch (Throwable th) {
+                    th.printStackTrace();
+                }
+            }
+        });
+    }
 
 }
