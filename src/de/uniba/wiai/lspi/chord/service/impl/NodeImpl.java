@@ -436,8 +436,8 @@ public final class NodeImpl extends Node {
         }
         if (impl.getLastReceivedTransactionID() < info.getTransaction()) {
             impl.setLastReceivedTransactionID(info.getTransaction());
-            return;
-        }
+        } else
+        	return;
 
         List<Node> fingerTable = this.impl.getFingerTable();
 
