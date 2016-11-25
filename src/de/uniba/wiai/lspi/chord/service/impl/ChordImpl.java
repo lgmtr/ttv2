@@ -1101,7 +1101,7 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 	}
 
 	public void asyncBroadcast(final Broadcast bc, final Node n) {
-		System.out.println("Attempting asynchronous initial broadcast!");
+		MainGUI.getInstance().outputTextArea.appendText("Attempting asynchronous initial broadcast!");
 		this.asyncExecutor.execute(new Runnable() {
 			public void run() {
 				try {

@@ -39,6 +39,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import de.haw.ttv2.main.MainGUI;
 import de.uniba.wiai.lspi.chord.com.Broadcast;
 import de.uniba.wiai.lspi.chord.com.CommunicationException;
 import de.uniba.wiai.lspi.chord.com.Endpoint;
@@ -430,7 +431,6 @@ public final class NodeImpl extends Node {
 	// TODO: implement this function in TTP
 	@Override
     public final void broadcast(Broadcast info) {
-		System.out.println(impl.getLastReceivedTransactionID());
         if (this.logger.isEnabledFor(DEBUG)) {
             this.logger.debug(" Send broadcast message");
         }
@@ -470,7 +470,6 @@ public final class NodeImpl extends Node {
                 Broadcast b = new Broadcast(newRange, info.getSource(), info.getTarget(), info.getTransaction(),
                         info.getHit());
                 Node n = fingerTable.get(i);
-                System.out.println(info);
                 asyncBroadcast(b, n);
             } else if (entryID.isInInterval(range, this.getNodeID()) || entryID.equals(this.getNodeID())) {
                 // entry = this OR after range and before this => do nothing
@@ -485,7 +484,7 @@ public final class NodeImpl extends Node {
     }
 
     public void asyncBroadcast(final Broadcast bc, final Node n) {
-        System.out.println("Attempting asynchronous re-broadcast!");
+    	MainGUI.getInstance().outputTextArea.appendText("Attempting asynchronous re-broadcast!");
         this.asyncExecutor.execute(new Runnable() {
             public void run() {
                 try {
