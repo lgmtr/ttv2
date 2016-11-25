@@ -1,5 +1,6 @@
 package de.haw.ttv2.main;
 
+import de.uniba.wiai.lspi.chord.com.Broadcast;
 import de.uniba.wiai.lspi.chord.data.ID;
 import de.uniba.wiai.lspi.chord.service.NotifyCallback;
 import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
@@ -21,6 +22,12 @@ public class GameState implements NotifyCallback {
 	public void broadcast(ID source, ID target, Boolean hit) {
 		MainGUI.getInstance().outputTextArea.appendText("Broadcast from: " + source.toString() + "\nto: " + target.toString() + "\nhit: "
 				+ hit.toString() + "\n");
+	}
+
+	@Override
+	public void broadcast(Broadcast bc) {
+//		MainGUI.getInstance().outputTextArea.appendText("Broadcast from: " + bc.getSource().toString() + "\nto: " + bc.getTarget().toString() + "\nhit: "
+//				+ bc.getHit().toString() + "\n");
 	}
 
 }

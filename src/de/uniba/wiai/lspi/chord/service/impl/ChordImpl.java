@@ -74,14 +74,12 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 	 * Number of threads to allow concurrent invocations of asynchronous
 	 * methods. e.g. {@link ChordImpl#insertAsync(Key, Serializable)}.
 	 */
-	private static final int ASYNC_CALL_THREADS = Integer.parseInt(System.getProperty(ChordImpl.class.getName()
-			+ ".AsyncThread.no"));
+	private static final int ASYNC_CALL_THREADS = Integer.parseInt(System.getProperty(ChordImpl.class.getName() + ".AsyncThread.no"));
 
 	/**
 	 * Time in seconds until the stabilize task is started for the first time.
 	 */
-	private static final int STABILIZE_TASK_START = Integer.parseInt(System
-			.getProperty("de.uniba.wiai.lspi.chord.service.impl.ChordImpl.StabilizeTask.start"));
+	private static final int STABILIZE_TASK_START = Integer.parseInt(System.getProperty("de.uniba.wiai.lspi.chord.service.impl.ChordImpl.StabilizeTask.start"));
 
 	/**
 	 * Time in seconds between two invocations of the stabilize task.
@@ -92,8 +90,8 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 	/**
 	 * Time in seconds until the fix finger task is started for the first time.
 	 */
-	private static final int FIX_FINGER_TASK_START = Integer.parseInt(System
-			.getProperty("de.uniba.wiai.lspi.chord.service.impl.ChordImpl.FixFingerTask.start"));
+	private static final int FIX_FINGER_TASK_START = Integer
+			.parseInt(System.getProperty("de.uniba.wiai.lspi.chord.service.impl.ChordImpl.FixFingerTask.start"));
 
 	/**
 	 * Time in seconds between two invocations of the fix finger task.
@@ -117,9 +115,8 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 	/**
 	 * Number of references in the successor list.
 	 */
-	private static final int NUMBER_OF_SUCCESSORS = (Integer.parseInt(System
-			.getProperty("de.uniba.wiai.lspi.chord.service.impl.ChordImpl.successors")) < 1) ? 1 : Integer
-			.parseInt(System.getProperty("de.uniba.wiai.lspi.chord.service.impl.ChordImpl.successors"));
+	private static final int NUMBER_OF_SUCCESSORS = (Integer.parseInt(System.getProperty("de.uniba.wiai.lspi.chord.service.impl.ChordImpl.successors")) < 1) ? 1
+			: Integer.parseInt(System.getProperty("de.uniba.wiai.lspi.chord.service.impl.ChordImpl.successors"));
 
 	/**
 	 * Object logger.
@@ -148,7 +145,7 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 	private ExecutorService asyncExecutor;
 
 	private int lastReceivedTransactionID;
-	
+
 	/**
 	 * ThreadFactory used with Executor services.
 	 * 
@@ -204,8 +201,7 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 		this.logger.debug("Logger initialized.");
 
 		this.maintenanceTasks = new ScheduledThreadPoolExecutor(3, new ChordThreadFactory("MaintenanceTaskExecution"));
-		this.asyncExecutor = Executors.newFixedThreadPool(ChordImpl.ASYNC_CALL_THREADS, new ChordThreadFactory(
-				"AsynchronousExecution"));
+		this.asyncExecutor = Executors.newFixedThreadPool(ChordImpl.ASYNC_CALL_THREADS, new ChordThreadFactory("AsynchronousExecution"));
 		this.hashFunction = HashFunction.getHashFunction();
 		logger.info("ChordImpl initialized!");
 	}
@@ -235,8 +231,7 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 		}
 
 		if (this.localNode != null) {
-			IllegalStateException e = new IllegalStateException(
-					"URL cannot be set after creating or joining a network!");
+			IllegalStateException e = new IllegalStateException("URL cannot be set after creating or joining a network!");
 			this.logger.error("Illegal state.", e);
 			throw e;
 		}
@@ -280,13 +275,13 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 	}
 
 	public int getLastReceivedTransactionID() {
-        return lastReceivedTransactionID;
-    }
+		return lastReceivedTransactionID;
+	}
 
-    public void setLastReceivedTransactionID(int lastReceivedTransactionID) {
-        this.lastReceivedTransactionID = lastReceivedTransactionID;
-    }
-	
+	public void setLastReceivedTransactionID(int lastReceivedTransactionID) {
+		this.lastReceivedTransactionID = lastReceivedTransactionID;
+	}
+
 	public final void create() throws ServiceException {
 
 		// is node already connected?
@@ -380,8 +375,7 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 		}
 
 		// create NodeImpl instance for communication
-		this.localNode = new NodeImpl(this, this.getID(), this.localURL, this.localCallback, this.references,
-				this.entries);
+		this.localNode = new NodeImpl(this, this.getID(), this.localURL, this.localCallback, this.references, this.entries);
 
 		// create tasks for fixing finger table, checking predecessor and
 		// stabilizing
@@ -400,17 +394,17 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 	private final void createTasks() {
 
 		// start thread which periodically stabilizes with successor
-		this.maintenanceTasks.scheduleWithFixedDelay(new StabilizeTask(this.localNode, this.references, this.entries),
-				ChordImpl.STABILIZE_TASK_START, ChordImpl.STABILIZE_TASK_INTERVAL, TimeUnit.SECONDS);
+		this.maintenanceTasks.scheduleWithFixedDelay(new StabilizeTask(this.localNode, this.references, this.entries), ChordImpl.STABILIZE_TASK_START,
+				ChordImpl.STABILIZE_TASK_INTERVAL, TimeUnit.SECONDS);
 
 		// start thread which periodically attempts to fix finger table
-		this.maintenanceTasks.scheduleWithFixedDelay(new FixFingerTask(this.localNode, this.getID(), this.references),
-				ChordImpl.FIX_FINGER_TASK_START, ChordImpl.FIX_FINGER_TASK_INTERVAL, TimeUnit.SECONDS);
+		this.maintenanceTasks.scheduleWithFixedDelay(new FixFingerTask(this.localNode, this.getID(), this.references), ChordImpl.FIX_FINGER_TASK_START,
+				ChordImpl.FIX_FINGER_TASK_INTERVAL, TimeUnit.SECONDS);
 
 		// start thread which periodically checks whether predecessor has
 		// failed
-		this.maintenanceTasks.scheduleWithFixedDelay(new CheckPredecessorTask(this.references),
-				ChordImpl.CHECK_PREDECESSOR_TASK_START, ChordImpl.CHECK_PREDECESSOR_TASK_INTERVAL, TimeUnit.SECONDS);
+		this.maintenanceTasks.scheduleWithFixedDelay(new CheckPredecessorTask(this.references), ChordImpl.CHECK_PREDECESSOR_TASK_START,
+				ChordImpl.CHECK_PREDECESSOR_TASK_INTERVAL, TimeUnit.SECONDS);
 	}
 
 	public final void join(URL bootstrapURL) throws ServiceException {
@@ -427,8 +421,7 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 
 		// has nodeURL been set?
 		if (this.localURL == null) {
-			throw new ServiceException("Node URL is not set yet! Please " + "set URL with help of setURL(URL) "
-					+ "before invoking join(URL)!");
+			throw new ServiceException("Node URL is not set yet! Please " + "set URL with help of setURL(URL) " + "before invoking join(URL)!");
 		}
 
 		// if necessary, generate nodeID out of nodeURL
@@ -517,16 +510,14 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 		}
 
 		// create NodeImpl instance for communication
-		this.localNode = new NodeImpl(this, this.getID(), this.localURL, this.localCallback, this.references,
-				this.entries);
+		this.localNode = new NodeImpl(this, this.getID(), this.localURL, this.localCallback, this.references, this.entries);
 
 		// create proxy for outgoing connection to bootstrap node
 		Node bootstrapNode;
 		try {
 			bootstrapNode = Proxy.createConnection(this.localURL, bootstrapURL);
 		} catch (CommunicationException e) {
-			throw new ServiceException("An error occured when creating a proxy for outgoing "
-					+ "connection to bootstrap node! Join operation" + "failed!", e);
+			throw new ServiceException("An error occured when creating a proxy for outgoing " + "connection to bootstrap node! Join operation" + "failed!", e);
 
 		}
 
@@ -540,9 +531,8 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 		try {
 			mySuccessor = bootstrapNode.findSuccessor(this.getID());
 		} catch (CommunicationException e1) {
-			throw new ServiceException("An error occured when trying to find "
-					+ "the successor of this node using bootstrap node " + "with url " + bootstrapURL.toString()
-					+ "! Join " + "operation failed!", e1);
+			throw new ServiceException("An error occured when trying to find " + "the successor of this node using bootstrap node " + "with url "
+					+ bootstrapURL.toString() + "! Join " + "operation failed!", e1);
 		}
 
 		// store reference on my successor
@@ -590,8 +580,7 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 						copyOfRefsAndEntries = refs.get(0).notifyAndCopyEntries(this.localNode);
 						refs = copyOfRefsAndEntries.getRefs();
 					} catch (CommunicationException e) {
-						throw new ServiceException("An error occured when contacting "
-								+ "the successor of this node in order to "
+						throw new ServiceException("An error occured when contacting " + "the successor of this node in order to "
 								+ "obtain its references and entries! Join " + "operation failed!", e);
 					}
 				}
@@ -601,13 +590,11 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 		// add new references, if pings are successful //removed ping to new
 		// references. 17.09.2007 sven
 		for (Node newReference : copyOfRefsAndEntries.getRefs()) {
-			if (newReference != null && !newReference.equals(this.localNode)
-					&& !this.references.containsReference(newReference)) {
+			if (newReference != null && !newReference.equals(this.localNode) && !this.references.containsReference(newReference)) {
 
 				ChordImpl.this.references.addReference(newReference);
 				if (ChordImpl.this.logger.isEnabledFor(DEBUG)) {
-					ChordImpl.this.logger.debug("Added reference on " + newReference.getNodeID()
-							+ " which responded to " + "ping request");
+					ChordImpl.this.logger.debug("Added reference on " + newReference.getNodeID() + " which responded to " + "ping request");
 				}
 
 			}
@@ -685,8 +672,8 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 				inserted = true;
 			} catch (CommunicationException e1) {
 				if (debug) {
-					this.logger.debug("An error occured while invoking the insertEntry method "
-							+ " on the appropriate node! Insert operation " + "failed!", e1);
+					this.logger
+							.debug("An error occured while invoking the insertEntry method " + " on the appropriate node! Insert operation " + "failed!", e1);
 				}
 				continue;
 			}
@@ -727,8 +714,8 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 				retrieved = true;
 			} catch (CommunicationException e1) {
 				if (debug) {
-					this.logger.debug("An error occured while invoking the retrieveEntry method "
-							+ " on the appropriate node! Retrieve operation " + "failed!", e1);
+					this.logger.debug(
+							"An error occured while invoking the retrieveEntry method " + " on the appropriate node! Retrieve operation " + "failed!", e1);
 				}
 				continue;
 			}
@@ -781,8 +768,8 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 				retrieved = true;
 			} catch (CommunicationException e1) {
 				if (debug) {
-					this.logger.debug("An error occured while invoking the retrieveEntry method "
-							+ " on the appropriate node! Retrieve operation " + "failed!", e1);
+					this.logger.debug(
+							"An error occured while invoking the retrieveEntry method " + " on the appropriate node! Retrieve operation " + "failed!", e1);
 				}
 				continue;
 			}
@@ -833,8 +820,8 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 				removed = true;
 			} catch (CommunicationException e1) {
 				if (debug) {
-					this.logger.debug("An error occured while invoking the removeEntry method "
-							+ " on the appropriate node! Remove operation " + "failed!", e1);
+					this.logger
+							.debug("An error occured while invoking the removeEntry method " + " on the appropriate node! Remove operation " + "failed!", e1);
 				}
 				continue;
 			}
@@ -878,16 +865,14 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 		if (successor == null) {
 
 			if (this.logger.isEnabledFor(INFO)) {
-				this.logger.info("I appear to be the only node in the network, so I am " + "my own "
-						+ "successor; return reference on me: " + this.getID());
+				this.logger.info("I appear to be the only node in the network, so I am " + "my own " + "successor; return reference on me: " + this.getID());
 			}
 			return this.localNode;
 		}
 		// check if the key to look up lies between this node and its successor
 		else if (key.isInInterval(this.getID(), successor.getNodeID()) || key.equals(successor.getNodeID())) {
 			if (debug) {
-				this.logger.debug("The requested key lies between my own and my "
-						+ "successor's node id; therefore return my successor.");
+				this.logger.debug("The requested key lies between my own and my " + "successor's node id; therefore return my successor.");
 			}
 
 			// try to reach successor
@@ -895,8 +880,7 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 				// successor.ping(); // if methods returns, successor is alive.
 				// ping removed on 17.09.2007. sven
 				if (debug) {
-					this.logger.debug("Returning my successor " + successor.getNodeID() + " of type "
-							+ successor.getClass());
+					this.logger.debug("Returning my successor " + successor.getNodeID() + " of type " + successor.getClass());
 				}
 				return successor;
 			} catch (Exception e) {
@@ -916,14 +900,13 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 
 			try {
 				if (debug) {
-					this.logger.debug("Asking closest preceding node known to this node for closest preceding node "
-							+ closestPrecedingNode.getNodeID() + " concerning key " + key + " to look up");
+					this.logger.debug("Asking closest preceding node known to this node for closest preceding node " + closestPrecedingNode.getNodeID()
+							+ " concerning key " + key + " to look up");
 				}
 				return closestPrecedingNode.findSuccessor(key);
 			} catch (CommunicationException e) {
-				this.logger.error("Communication failure while requesting successor " + "for key " + key
-						+ " from node " + closestPrecedingNode.toString() + " - looking up successor for failed node "
-						+ closestPrecedingNode.toString());
+				this.logger.error("Communication failure while requesting successor " + "for key " + key + " from node " + closestPrecedingNode.toString()
+						+ " - looking up successor for failed node " + closestPrecedingNode.toString());
 				this.references.removeReference(closestPrecedingNode);
 				return findSuccessor(key);
 			}
@@ -1028,40 +1011,38 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 	// send broadcast to all nodes in finger table
 	@Override
 	public void broadcast(ID target, Boolean hit) {
-        this.logger.info("App called broadcast!");
-        MainGUI.getInstance().outputTextArea.appendText("App called broadcast!\n");
-        this.setLastReceivedTransactionID(getLastReceivedTransactionID() + 1);
+		this.logger.info("App called broadcast!");
+		MainGUI.getInstance().outputTextArea.appendText("App called broadcast!\n");
+		this.setLastReceivedTransactionID(getLastReceivedTransactionID() + 1);
 
-        List<Node> sortedNodes = this.getFingerTable(); // get nodes
-        Collections.sort(sortedNodes); // sort
-        for (int i = 0; i < sortedNodes.size(); i++) {
+		List<Node> sortedNodes = this.getFingerTable(); // get nodes
+		Collections.sort(sortedNodes); // sort
+		for (int i = 0; i < sortedNodes.size(); i++) {
 
-            Node node = sortedNodes.get(i);
-            int turn = this.getLastReceivedTransactionID();
-            ID range = null;
+			Node node = sortedNodes.get(i);
+			int turn = this.getLastReceivedTransactionID();
+			ID range = null;
 
-            // case: Node ist mein Predecessor
-            if (sortedNodes.get(i).getNodeID().equals(this.getPredecessorID())) {
-                range = this.getID();
-            }
+			// case: Node ist mein Predecessor
+			if (sortedNodes.get(i).getNodeID().equals(this.getPredecessorID())) {
+				range = this.getID();
+			}
 
-            // case: Range ist ID der nächsten node
-            if (i < sortedNodes.size() - 1) {
-                range = sortedNodes.get(i + 1).getNodeID();
-            } else {
-                range = sortedNodes.get(0).getNodeID();
-                // is predecessor in interval from last node to first node?
-                if (this.getPredecessorID().isInInterval(sortedNodes.get(i).getNodeID(),
-                        sortedNodes.get(0).getNodeID())) {
-                    range = this.getPredecessorID();
-                }
-            }
-            
-            Broadcast bc = new Broadcast(range, this.getID(), target, turn, hit);
+			// case: Range ist ID der nächsten node
+			if (i < sortedNodes.size() - 1) {
+				range = sortedNodes.get(i + 1).getNodeID();
+			} else {
+				range = sortedNodes.get(0).getNodeID();
+				// is predecessor in interval from last node to first node?
+				if (this.getPredecessorID().isInInterval(sortedNodes.get(i).getNodeID(), sortedNodes.get(0).getNodeID())) {
+					range = this.getPredecessorID();
+				}
+			}
 
-            this.asyncBroadcast(bc, node);
+			Broadcast bc = new Broadcast(range, this.getID(), target, turn, hit);
+			this.asyncBroadcast(bc, node);
 
-        }
+		}
 	}
 
 	public void setCallback(NotifyCallback callback) {
@@ -1088,49 +1069,48 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 			this.localNode.clearCallback();
 		}
 	}
-	
 
-    public Node getSuccessor() {
-        return references.getSuccessor();
-    }
+	public Node getSuccessor() {
+		return references.getSuccessor();
+	}
 
-    public List<Node> getSuccessors() {
-        return references.getSuccessors();
-    }
+	public List<Node> getSuccessors() {
+		return references.getSuccessors();
+	}
 
-    public References getReferences() {
-        return references;
-    }
+	public References getReferences() {
+		return references;
+	}
 
-    public Logger getLogger() {
-        return logger;
-    }
+	public Logger getLogger() {
+		return logger;
+	}
 
-    public void setLogger(Logger logger) {
-        this.logger = logger;
-    }
+	public void setLogger(Logger logger) {
+		this.logger = logger;
+	}
 
-    public URL getURL(ID id) {
-        URL url = null;
-        for (Node node : this.getReferences().getFingerTableCopy()) {
-            if (node != null && node.getNodeID().equals(id)) {
-                url = node.getNodeURL();
-            }
-        }
-        return url;
-    }
+	public URL getURL(ID id) {
+		URL url = null;
+		for (Node node : this.getReferences().getFingerTableCopy()) {
+			if (node != null && node.getNodeID().equals(id)) {
+				url = node.getNodeURL();
+			}
+		}
+		return url;
+	}
 
-    public void asyncBroadcast(final Broadcast bc, final Node n) {
-        System.out.println("Attempting asynchronous initial broadcast!");
-        this.asyncExecutor.execute(new Runnable() {
-            public void run() {
-                try {
-                    n.broadcast(bc);
-                } catch (Throwable th) {
-                    th.printStackTrace();
-                }
-            }
-        });
-    }
+	public void asyncBroadcast(final Broadcast bc, final Node n) {
+		System.out.println("Attempting asynchronous initial broadcast!");
+		this.asyncExecutor.execute(new Runnable() {
+			public void run() {
+				try {
+					n.broadcast(bc);
+				} catch (Throwable th) {
+					th.printStackTrace();
+				}
+			}
+		});
+	}
 
 }

@@ -430,6 +430,7 @@ public final class NodeImpl extends Node {
 	// TODO: implement this function in TTP
 	@Override
     public final void broadcast(Broadcast info) {
+		System.out.println(impl.getLastReceivedTransactionID());
         if (this.logger.isEnabledFor(DEBUG)) {
             this.logger.debug(" Send broadcast message");
         }
@@ -469,16 +470,16 @@ public final class NodeImpl extends Node {
                 Broadcast b = new Broadcast(newRange, info.getSource(), info.getTarget(), info.getTransaction(),
                         info.getHit());
                 Node n = fingerTable.get(i);
+                System.out.println(info);
                 asyncBroadcast(b, n);
             } else if (entryID.isInInterval(range, this.getNodeID()) || entryID.equals(this.getNodeID())) {
                 // entry = this OR after range and before this => do nothing
             }
         }
-
         // notify game logic
         if (this.notifyCallback != null) {
             this.notifyCallback.broadcast(info.getSource(), info.getTarget(), info.getHit());
-//            this.notifyCallback.broadcast(info);
+            this.notifyCallback.broadcast(info);
         }
 
     }

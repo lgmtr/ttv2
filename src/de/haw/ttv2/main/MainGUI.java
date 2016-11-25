@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -43,10 +44,6 @@ public class MainGUI extends Application {
 	private ComboBox<String> cb;
 	private String ipTextField;
 	private String portTextField;
-
-	private int playerCount = 0;
-	private JoiningThread jt;
-	private Thread t;
 
 	public TextArea outputTextArea;
 
@@ -95,9 +92,8 @@ public class MainGUI extends Application {
 						if (!cb.getValue().isEmpty()) {
 							chordImpl.create(localURL);
 							outputTextArea.appendText("Chord listens on: " + localURL + "\n");
-							jt = new JoiningThread();
-							t = new Thread(jt);
-							t.start();
+							Thread thread = new Thread(new JoiningThread(chordImpl));
+							thread.start();
 						}
 					}
 				} catch (ServiceException error) {
@@ -147,9 +143,12 @@ public class MainGUI extends Application {
 		}), createButton("Broadcast", 190, 40, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				Set<de.uniba.wiai.lspi.chord.com.Node> fingerSet = new HashSet<de.uniba.wiai.lspi.chord.com.Node>(chordImpl.getFingerTable());
-				for(de.uniba.wiai.lspi.chord.com.Node n : fingerSet)
-					chordImpl.broadcast(n.getNodeID(), false);
+				broadcast();
+			}
+		}), createButton("Retrieve", 190, 40, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				retrieve();
 			}
 		}));
 	}
@@ -215,23 +214,24 @@ public class MainGUI extends Application {
 		return button;
 	}
 
-	private class JoiningThread implements Runnable {
+	private void broadcast() {
+		Platform.runLater(new Runnable() {
 
-		boolean running = true;
-
-		@Override
-		public void run() {
-			while (running) {
-				Set<de.uniba.wiai.lspi.chord.com.Node> fingerSet = new HashSet<de.uniba.wiai.lspi.chord.com.Node>(chordImpl.getFingerTable());
-				if (fingerSet.size() > playerCount){
-					playerCount = fingerSet.size();
-					outputTextArea.appendText("Player Joined!");
-				}
+			@Override
+			public void run() {
+				Set<de.uniba.wiai.lspi.chord.com.Node> fingerSet = new HashSet<>(chordImpl.getFingerTable());
+				for (de.uniba.wiai.lspi.chord.com.Node n : fingerSet)
+					chordImpl.broadcast(n.getNodeID(), false);
 			}
-		}
+		});
+	}
 
-		public void stop() {
-			running = false;
-		}
+	private void retrieve() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				chordImpl.retrieve(chordImpl.getFingerTable().get(0).getNodeID());
+			}
+		});
 	}
 }
