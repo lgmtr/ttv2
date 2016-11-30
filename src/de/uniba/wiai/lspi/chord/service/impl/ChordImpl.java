@@ -42,7 +42,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import de.haw.ttv2.main.MainGUI;
+import de.haw.ttv2.main.GUIMessageQueue;
 import de.uniba.wiai.lspi.chord.com.Broadcast;
 import de.uniba.wiai.lspi.chord.com.CommunicationException;
 import de.uniba.wiai.lspi.chord.com.Entry;
@@ -1012,7 +1012,7 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 	@Override
 	public void broadcast(ID target, Boolean hit) {
 		this.logger.info("App called broadcast!");
-		MainGUI.getInstance().outputTextArea.appendText("App called broadcast!\n");
+		GUIMessageQueue.getInstance().addMessage("App called broadcast!\n");
 		this.setLastReceivedTransactionID(getLastReceivedTransactionID() + 1);
 
 		List<Node> sortedNodes = this.getFingerTable(); // get nodes
@@ -1101,7 +1101,7 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 	}
 
 	public void asyncBroadcast(final Broadcast bc, final Node n) {
-		MainGUI.getInstance().outputTextArea.appendText("Attempting asynchronous initial broadcast!");
+		GUIMessageQueue.getInstance().addMessage("Attempting asynchronous initial broadcast!");
 		this.asyncExecutor.execute(new Runnable() {
 			public void run() {
 				try {

@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -13,6 +16,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -25,6 +29,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import de.haw.ttv2.main.network.NetworkInterfaceInfo;
 import de.uniba.wiai.lspi.chord.data.URL;
 import de.uniba.wiai.lspi.chord.service.PropertiesLoader;
@@ -35,8 +40,11 @@ public class MainGUI extends Application {
 
 	private static final String PROTOCOL = URL.KNOWN_PROTOCOLS.get(URL.SOCKET_PROTOCOL);
 
-	private static final double WINDOW_WIDTH = 1200 - 10;
-	private static final double WINDOW_HEIGHT = 800 - 10;
+	private static final double WINDOW_WIDTH = 1200;
+	private static final double WINDOW_HEIGHT = 800;
+	private static final double RIGHT_WINDOW_SIZE = 200;
+
+	private static final double FRAME_DURATION = 100;
 
 	private ChordImpl chordImpl;
 	private GameState gameState;
@@ -46,6 +54,8 @@ public class MainGUI extends Application {
 	private String portTextField;
 
 	public TextArea outputTextArea;
+
+	private Timeline animation;
 
 	private static MainGUI instance = null;
 
@@ -58,20 +68,27 @@ public class MainGUI extends Application {
 		primaryStage.setResizable(false);
 		primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
 		BorderPane borderPane = new BorderPane();
-		borderPane.setLayoutY(10);
-		borderPane.setLayoutX(10);
+		// borderPane.setLayoutY(10);
+		// borderPane.setLayoutX(10);
 		VBox rightBox = new VBox();
-		rightBox.setMinWidth(200);
+		rightBox.setMinWidth(RIGHT_WINDOW_SIZE);
 		cb = createNIIAComboBox();
-		rightBox.getChildren().add(cb);
-		rightBox.getChildren().addAll(createTextFields());
-		rightBox.getChildren().addAll(createServerAndClientButtons());
+		VBox vboxMenu = new VBox(10);
+		vboxMenu.getChildren().add(cb);
+		vboxMenu.getChildren().addAll(createTextFields());
+		vboxMenu.getChildren().addAll(createServerAndClientButtons());
+		vboxMenu.setAlignment(Pos.CENTER);
+		rightBox.getChildren().add(vboxMenu);
 		borderPane.setRight(rightBox);
 		VBox centerBox = new VBox();
 		outputTextArea = new TextArea();
-		outputTextArea.setMinSize(WINDOW_WIDTH - 200, WINDOW_HEIGHT);
-		centerBox.getChildren().add(outputTextArea);
-		centerBox.setMinWidth(WINDOW_WIDTH - 200);
+		outputTextArea.setMinSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 20, WINDOW_HEIGHT);
+		outputTextArea.setMaxSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 20, WINDOW_HEIGHT);
+		VBox vboxCenter = new VBox();
+		vboxCenter.getChildren().add(outputTextArea);
+		vboxCenter.setAlignment(Pos.CENTER);
+		centerBox.getChildren().add(vboxCenter);
+		centerBox.setMinWidth(WINDOW_WIDTH - RIGHT_WINDOW_SIZE);
 		borderPane.setCenter(centerBox);
 		root.getChildren().add(borderPane);
 	}
@@ -91,7 +108,7 @@ public class MainGUI extends Application {
 					if (cb.getValue() != null) {
 						if (!cb.getValue().isEmpty()) {
 							chordImpl.create(localURL);
-							outputTextArea.appendText("Chord listens on: " + localURL + "\n");
+							GUIMessageQueue.getInstance().addMessage("Chord listens on: " + localURL + "\n");
 							Thread thread = new Thread(new JoiningThread(chordImpl));
 							thread.start();
 						}
@@ -120,7 +137,7 @@ public class MainGUI extends Application {
 					if (cb.getValue() != null && ipTextField != null) {
 						if (!cb.getValue().isEmpty() && !ipTextField.isEmpty()) {
 							chordImpl.join(localURL, serverURL);
-							outputTextArea.appendText("Joined Server: " + serverURL + "\n");
+							GUIMessageQueue.getInstance().addMessage("Joined Server: " + serverURL + "\n");
 						}
 					}
 				} catch (ServiceException error) {
@@ -131,7 +148,7 @@ public class MainGUI extends Application {
 			@Override
 			public void handle(ActionEvent e) {
 				chordImpl.leave();
-				outputTextArea.appendText("Disconnected\n");
+				GUIMessageQueue.getInstance().addMessage("Disconnected\n");
 			}
 		}), createButton("Close Application", 190, 40, new EventHandler<ActionEvent>() {
 			@Override
@@ -156,6 +173,17 @@ public class MainGUI extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		init(primaryStage);
+		animation = new Timeline();
+		animation.getKeyFrames().add(new KeyFrame(Duration.millis(FRAME_DURATION), new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				String message = GUIMessageQueue.getInstance().getFirstMessage();
+				if (message != null)
+					outputTextArea.appendText(message);
+			}
+		}));
+		animation.setCycleCount(Animation.INDEFINITE);
+		animation.play();
 		initChord();
 		primaryStage.show();
 		instance = this;
@@ -216,7 +244,6 @@ public class MainGUI extends Application {
 
 	private void broadcast() {
 		Platform.runLater(new Runnable() {
-
 			@Override
 			public void run() {
 				Set<de.uniba.wiai.lspi.chord.com.Node> fingerSet = new HashSet<>(chordImpl.getFingerTable());
