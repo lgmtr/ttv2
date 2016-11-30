@@ -179,7 +179,7 @@ public class MainGUI extends Application {
 			public void handle(ActionEvent arg0) {
 				String message = GUIMessageQueue.getInstance().getFirstMessage();
 				if (message != null)
-					outputTextArea.appendText(message);
+					outputTextArea.appendText(message + "\n");
 			}
 		}));
 		animation.setCycleCount(Animation.INDEFINITE);
