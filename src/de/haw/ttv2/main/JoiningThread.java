@@ -24,8 +24,7 @@ public class JoiningThread implements Runnable{
 			Set<Node> fingerSet = new HashSet<>(chord.getFingerTable());
 			if(playerCount != fingerSet.size()){
 				playerCount = fingerSet.size();
-				System.out.println(playerCount);
-//				MainGUI.getInstance().outputTextArea.appendText("New Player Joined. New playercount is " + playerCount + "\n");
+				GUIMessageQueue.getInstance().addMessage("Joined Player Count: " + playerCount);
 			}
 			waitTime(500);
 		}

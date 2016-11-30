@@ -15,12 +15,12 @@ public class GameState implements NotifyCallback {
 
 	@Override
 	public void retrieved(ID target) {
-		System.out.println("ID: " + target + "\n");
+		GUIMessageQueue.getInstance().addMessage("ID: " + target + "\n");
 	}
 
 	@Override
 	public void broadcast(ID source, ID target, Boolean hit) {
-		System.out.println("Broadcast from: " + source.toString() + "\nto: " + target.toString() + "\nhit: "
+		GUIMessageQueue.getInstance().addMessage("Broadcast from: " + source.toString() + "\nto: " + target.toString() + "\nhit: "
 				+ hit.toString() + "\n");
 	}
 
