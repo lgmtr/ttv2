@@ -1,11 +1,8 @@
 package de.haw.ttv2.main;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -34,7 +31,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import de.haw.ttv2.main.network.NetworkInterfaceInfo;
-import de.uniba.wiai.lspi.chord.data.ID;
 import de.uniba.wiai.lspi.chord.data.URL;
 import de.uniba.wiai.lspi.chord.service.PropertiesLoader;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
@@ -48,7 +44,7 @@ public class MainGUI extends Application {
 	private static final double WINDOW_HEIGHT = 800;
 	private static final double RIGHT_WINDOW_SIZE = 200;
 
-	private static final double FRAME_DURATION = 100;
+	private static final double FRAME_DURATION = 10;
 
 	private ChordImpl chordImpl;
 	private GameState gameState;
@@ -163,39 +159,12 @@ public class MainGUI extends Application {
 			public void handle(ActionEvent e) {
 				retrieve();
 			}
-		}), createButton("Create Gamefield Test", 190, 40, new EventHandler<ActionEvent>() {
+		}), createButton("Start Game", 190, 40, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				idTest();
+				gameState.startGame();
 			}
 		}));
-	}
-
-	private void idTest() {
-		try {
-			Set<de.uniba.wiai.lspi.chord.com.Node> fingerSet = new HashSet<>(chordImpl.getFingerTable());
-			List<ID> playerIDList = new ArrayList<>();
-			for (de.uniba.wiai.lspi.chord.com.Node node : fingerSet)
-				playerIDList.add(node.getNodeID());
-			playerIDList.add(chordImpl.getID());
-			Collections.sort(playerIDList);
-			List<Player> playerList = new ArrayList<>();
-			for (int i = 0; i < playerIDList.size(); i++) {
-				if (i == 0)
-					playerList.add(new Player(playerIDList.get(i), GameState.SECTOR_COUNT, GameState.SHIP_COUNT, playerIDList.get(playerIDList.size() - 1),
-							playerIDList.get(i)));
-				else
-					playerList.add(new Player(playerIDList.get(i), GameState.SECTOR_COUNT, GameState.SHIP_COUNT, playerIDList.get(i - 1), playerIDList.get(i)));
-			}
-			for (Player player : playerList) {
-				GUIMessageQueue.getInstance().addMessage("Player ID: " + player.getPlayerID().toHexString());
-				for (int i = 0; i < player.getPlayerFields().length; i++) {
-					GUIMessageQueue.getInstance().addMessage(player.getPlayerFields()[i].toString());
-				}
-			}
-		} catch (Exception e) {
-			GUIMessageQueue.getInstance().addMessage(e.toString());
-		}
 	}
 
 	@Override

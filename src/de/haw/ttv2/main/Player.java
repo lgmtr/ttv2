@@ -4,7 +4,7 @@ import java.math.BigInteger;
 
 import de.uniba.wiai.lspi.chord.data.ID;
 
-public class Player {
+public class Player implements Comparable<Player> {
 
 	private ID playerID;
 
@@ -109,6 +109,11 @@ public class Player {
 
 	protected Sector[] getPlayerFields() {
 		return playerFields;
+	}
+
+	@Override
+	public int compareTo(Player otherPlayer) {
+		return playerID.compareTo(otherPlayer.getPlayerID());
 	}
 
 }
