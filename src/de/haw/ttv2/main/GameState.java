@@ -58,7 +58,7 @@ public class GameState implements NotifyCallback {
 
 	@Override
 	public void retrieved(ID target) {
-		System.out.println("retrieved");
+		chordImpl.broadcast(target, false);
 		if (playerList.size() < 1) {
 			createGameField(chordImpl.getID());
 			Collections.sort(playerList);
