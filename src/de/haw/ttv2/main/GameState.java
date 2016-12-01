@@ -23,12 +23,12 @@ public class GameState implements NotifyCallback {
 	public static final int SECTOR_COUNT = 100;
 
 	public static final int SHIP_COUNT = 10;
-	
+
 	private List<Player> playerList;
 
 	private Player ownPlayer;
-	
-	//TestCounter
+
+	// TestCounter
 	private int testCounter = 0;
 
 	public GameState(ChordImpl chordImpl) {
@@ -50,7 +50,7 @@ public class GameState implements NotifyCallback {
 						playerIDList.get(i));
 			else
 				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, GameState.SHIP_COUNT, playerIDList.get(i - 1), playerIDList.get(i));
-			if(newPlayer.getPlayerID().equals(ownID))
+			if (newPlayer.getPlayerID().equals(ownID))
 				ownPlayer = newPlayer;
 			playerList.add(newPlayer);
 		}
@@ -58,13 +58,13 @@ public class GameState implements NotifyCallback {
 
 	@Override
 	public void retrieved(ID target) {
-		if(playerList.size()<1){
+		if (playerList.size() < 1) {
 			createGameField(chordImpl.getID());
 			Collections.sort(playerList);
 			playerList.remove(ownPlayer);
 		}
 		GUIMessageQueue.getInstance().addMessage("ID: " + target + "\n");
-		if(testCounter < 10){
+		if (testCounter < 10) {
 			shoot();
 			testCounter++;
 		}
@@ -91,23 +91,22 @@ public class GameState implements NotifyCallback {
 	public void startGame() {
 		createGameField(chordImpl.getID());
 		Collections.sort(playerList);
-		if(playerList.get(playerList.size()-1).compareTo(ownPlayer) == 0){
+		if (playerList.get(playerList.size() - 1).compareTo(ownPlayer) == 0) {
 			shoot();
 		}
 		playerList.remove(ownPlayer);
 	}
 
 	private void shoot() {
-		if(playerList.size()>1){
+		if (playerList.size() > 0) {
 			Player target = playerList.get(randBetween(0, playerList.size()));
 			Sector targetSector = target.getPlayerFields()[randBetween(0, target.getPlayerFields().length)];
 			chordImpl.retrieve(targetSector.getMiddle());
-		}else
+		} else
 			GUIMessageQueue.getInstance().addMessage("Keine Spieler vorhanden!");
 	}
-	
-	
-	private int randBetween(int min, int max){
+
+	private int randBetween(int min, int max) {
 		Random rand = new Random();
 		return rand.nextInt(max - (min + 1)) + min;
 	}
