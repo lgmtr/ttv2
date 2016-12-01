@@ -101,7 +101,7 @@ public class GameState implements NotifyCallback {
 
 	private void shoot() {
 		if (playerList.size() > 0) {
-			Player target = playerList.get(randBetween(0, playerList.size()));
+			Player target = playerList.get(0);
 			if(target.getPlayerID().compareTo(chordImpl.getID()) == 0)
 				System.out.println("Falsch");
 			Sector targetSector = target.getPlayerFields()[randBetween(0, target.getPlayerFields().length)];
