@@ -58,15 +58,17 @@ public class GameState implements NotifyCallback {
 
 	@Override
 	public void retrieved(ID target) {
+		System.out.println("retrieved");
 		if (playerList.size() < 1) {
 			createGameField(chordImpl.getID());
 			Collections.sort(playerList);
 			playerList.remove(ownPlayer);
 		}
-		GUIMessageQueue.getInstance().addMessage("ID: " + target + "\n");
+//		GUIMessageQueue.getInstance().addMessage("ID: " + target + "\n");
 		if (testCounter < 10) {
 			shoot();
 			testCounter++;
+			System.out.println(testCounter);
 		}
 	}
 
@@ -100,10 +102,12 @@ public class GameState implements NotifyCallback {
 	private void shoot() {
 		if (playerList.size() > 0) {
 			Player target = playerList.get(randBetween(0, playerList.size()));
+			if(target.getPlayerID().compareTo(chordImpl.getID()) == 0)
+				System.out.println("Falsch");
 			Sector targetSector = target.getPlayerFields()[randBetween(0, target.getPlayerFields().length)];
-			chordImpl.retrieve(targetSector.getMiddle());
-		} else
-			GUIMessageQueue.getInstance().addMessage("Keine Spieler vorhanden!");
+			Thread th = new Thread(new ShootingThread(chordImpl, targetSector.getMiddle()));
+			th.start();
+		}
 	}
 
 	private int randBetween(int min, int max) {
