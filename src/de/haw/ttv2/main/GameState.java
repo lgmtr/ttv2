@@ -60,6 +60,11 @@ public class GameState implements NotifyCallback {
 
 	@Override
 	public void retrieved(ID target) {
+		if(playerList.size()<1){
+			createGameField(chordImpl.getID());
+			Collections.sort(playerList);
+			playerList.remove(ownPlayer);
+		}
 		GUIMessageQueue.getInstance().addMessage("ID: " + target + "\n");
 		if(testCounter < 10){
 			shoot();
