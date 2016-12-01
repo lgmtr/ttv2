@@ -44,7 +44,7 @@ public class MainGUI extends Application {
 	private static final double WINDOW_HEIGHT = 600;
 	private static final double RIGHT_WINDOW_SIZE = 200;
 
-	private static final double FRAME_DURATION = 100;
+	private static final double FRAME_DURATION = 10;
 
 	private ChordImpl chordImpl;
 	private GameState gameState;
@@ -57,19 +57,11 @@ public class MainGUI extends Application {
 
 	private Timeline animation;
 
-	private static MainGUI instance = null;
-
-	public static synchronized MainGUI getInstance() {
-		return instance;
-	}
-
 	private void init(Stage primaryStage) {
 		Group root = new Group();
 		primaryStage.setResizable(false);
 		primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
 		BorderPane borderPane = new BorderPane();
-		// borderPane.setLayoutY(10);
-		// borderPane.setLayoutX(10);
 		VBox rightBox = new VBox();
 		rightBox.setMinWidth(RIGHT_WINDOW_SIZE);
 		cb = createNIIAComboBox();
@@ -167,6 +159,11 @@ public class MainGUI extends Application {
 			public void handle(ActionEvent e) {
 				retrieve();
 			}
+		}), createButton("Start Game", 190, 40, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				gameState.startGame();
+			}
 		}));
 	}
 
@@ -186,7 +183,6 @@ public class MainGUI extends Application {
 		animation.play();
 		initChord();
 		primaryStage.show();
-		instance = this;
 	}
 
 	private void initChord() {

@@ -31,6 +31,7 @@ import static de.uniba.wiai.lspi.util.logging.Logger.LogLevel.DEBUG;
 import static de.uniba.wiai.lspi.util.logging.Logger.LogLevel.INFO;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -1015,7 +1016,8 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 		GUIMessageQueue.getInstance().addMessage("App called broadcast!\n");
 		this.setLastReceivedTransactionID(getLastReceivedTransactionID() + 1);
 
-		List<Node> sortedNodes = this.getFingerTable(); // get nodes
+		Set<Node> setOfNodes = new HashSet<>(this.getFingerTable()); 
+		List<Node> sortedNodes = new ArrayList<>(setOfNodes); // get nodes
 		Collections.sort(sortedNodes); // sort
 		for (int i = 0; i < sortedNodes.size(); i++) {
 

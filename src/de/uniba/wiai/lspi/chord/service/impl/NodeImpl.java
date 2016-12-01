@@ -432,7 +432,7 @@ public final class NodeImpl extends Node {
 	@Override
     public final void broadcast(Broadcast info) {
         if (this.logger.isEnabledFor(DEBUG)) {
-            this.logger.debug(" Send broadcast message");
+            this.logger.debug("Send broadcast message");
         }
         if (impl.getLastReceivedTransactionID() < info.getTransaction()) {
             impl.setLastReceivedTransactionID(info.getTransaction());
@@ -478,7 +478,7 @@ public final class NodeImpl extends Node {
         // notify game logic
         if (this.notifyCallback != null) {
             this.notifyCallback.broadcast(info.getSource(), info.getTarget(), info.getHit());
-            this.notifyCallback.broadcast(info);
+//            this.notifyCallback.broadcast(info);
         }
 
     }
