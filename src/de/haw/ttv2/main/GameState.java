@@ -64,7 +64,7 @@ public class GameState implements NotifyCallback {
 			Collections.sort(playerList);
 			playerList.remove(ownPlayer);
 		}
-//		GUIMessageQueue.getInstance().addMessage("ID: " + target + "\n");
+		GUIMessageQueue.getInstance().addMessage("ID: " + target + "\n");
 		if (testCounter < 10) {
 			shoot();
 			testCounter++;
@@ -105,8 +105,8 @@ public class GameState implements NotifyCallback {
 			if(target.getPlayerID().compareTo(chordImpl.getID()) == 0)
 				System.out.println("Falsch");
 			Sector targetSector = target.getPlayerFields()[randBetween(0, target.getPlayerFields().length)];
-			Thread th = new Thread(new ShootingThread(chordImpl, targetSector.getMiddle()));
-			th.start();
+			ShootingThread st = new ShootingThread(chordImpl, targetSector.getMiddle());
+			st.start();
 		}
 	}
 
