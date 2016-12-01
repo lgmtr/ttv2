@@ -94,9 +94,9 @@ public class GameState implements NotifyCallback {
 		createGameField(chordImpl.getID());
 		Collections.sort(playerList);
 		if (playerList.get(playerList.size() - 1).compareTo(ownPlayer) == 0) {
+			playerList.remove(ownPlayer);
 			shoot();
 		}
-		playerList.remove(ownPlayer);
 	}
 
 	private void shoot() {
