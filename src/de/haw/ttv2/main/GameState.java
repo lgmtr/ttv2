@@ -1,5 +1,7 @@
 package de.haw.ttv2.main;
 
+import java.math.BigInteger;
+
 import de.uniba.wiai.lspi.chord.com.Broadcast;
 import de.uniba.wiai.lspi.chord.data.ID;
 import de.uniba.wiai.lspi.chord.service.NotifyCallback;
@@ -8,7 +10,13 @@ import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 public class GameState implements NotifyCallback {
 
 	private ChordImpl chordImpl;
-
+	
+	public static final ID MAXID = ID.valueOf(((BigInteger.valueOf(2).pow(160)).subtract(BigInteger.valueOf(1))));
+	
+	public static final int SECTOR_COUNT = 100;
+	
+	public static final int SHIP_COUNT = 10;
+	
 	public GameState(ChordImpl chordImpl) {
 		this.chordImpl = chordImpl;
 	}
