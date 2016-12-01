@@ -24,8 +24,6 @@ public class GameState implements NotifyCallback {
 
 	public static final int SHIP_COUNT = 10;
 	
-	private final Random RANDOM = new Random();
-
 	private List<Player> playerList;
 
 	private Player ownPlayer;
@@ -110,7 +108,8 @@ public class GameState implements NotifyCallback {
 	
 	
 	private int randBetween(int min, int max){
-		return RANDOM.nextInt(max - (min + 1)) + min;
+		Random rand = new Random();
+		return rand.nextInt(max - (min + 1)) + min;
 	}
 
 }
