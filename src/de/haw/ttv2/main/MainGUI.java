@@ -41,7 +41,7 @@ public class MainGUI extends Application {
 	private static final String PROTOCOL = URL.KNOWN_PROTOCOLS.get(URL.SOCKET_PROTOCOL);
 
 	private static final double WINDOW_WIDTH = 1200;
-	private static final double WINDOW_HEIGHT = 800;
+	private static final double WINDOW_HEIGHT = 600;
 	private static final double RIGHT_WINDOW_SIZE = 200;
 
 	private static final double FRAME_DURATION = 10;
