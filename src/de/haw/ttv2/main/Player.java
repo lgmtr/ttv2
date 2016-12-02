@@ -86,6 +86,19 @@ public class Player implements Comparable<Player> {
 
 	}
 
+	public void setShips() {
+		for (int i = 0; i < GameState.SHIP_COUNT; i++) {
+			boolean shipSet = false;
+			do {
+				int placeToSet = GameState.randBetween(0, shipInField.length);
+				if (!shipInField[placeToSet]) {
+					shipInField[placeToSet] = true;
+					shipSet = true;
+				}
+			} while (!shipSet);
+		}
+	}
+
 	public int getRemainingShips() {
 		return remainingShips;
 	}
@@ -100,11 +113,11 @@ public class Player implements Comparable<Player> {
 		return false;
 	}
 
-	public boolean shootInIntervalOfPlayer(ID target) {
+	public int shootInIntervalOfPlayer(ID target) {
 		for (int i = 0; i < playerFields.length; i++)
 			if (target.isInInterval(playerFields[i].getFrom(), playerFields[i].getTo()))
-				return true;
-		return false;
+				return i;
+		return -1;
 	}
 
 	protected Sector[] getPlayerFields() {
@@ -116,4 +129,33 @@ public class Player implements Comparable<Player> {
 		return playerID.compareTo(otherPlayer.getPlayerID());
 	}
 
+	public Boolean shipHitted(ID target) {
+		final int fieldID = shootInIntervalOfPlayer(target);
+		if (fieldID > 0)
+			if (shipInField[fieldID])
+				return true;
+		return false;
+	}
+
+	public void setHittedSector(int hittedSector, Boolean hit) {
+		if (!attackedFields[hittedSector]) {
+			attackedFields[hittedSector] = true;
+			if (hit) {
+				shipInField[hittedSector] = true;
+				if (remainingShips > 0)
+					remainingShips--;
+			}
+		}
+	}
+	
+	public Sector findFreeSector(){
+		boolean stop = false;
+		int sectorToShoot = -1;
+		do{
+			sectorToShoot = GameState.randBetween(0, attackedFields.length);
+			if(!attackedFields[sectorToShoot])
+				stop = true;
+		}while(!stop);
+		return playerFields[sectorToShoot];
+	}
 }

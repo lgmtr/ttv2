@@ -28,9 +28,6 @@ public class GameState implements NotifyCallback {
 
 	private Player ownPlayer;
 
-	// TestCounter
-	private int testCounter = 0;
-
 	public GameState(ChordImpl chordImpl) {
 		this.chordImpl = chordImpl;
 	}
@@ -58,17 +55,42 @@ public class GameState implements NotifyCallback {
 
 	@Override
 	public void retrieved(ID target) {
-		chordImpl.broadcast(target, false);
-		GUIMessageQueue.getInstance().addMessage("Get Shoot on ID: " + target + "\n");
-		if (testCounter < 10) {
+		final Boolean handleHit = handleHit(target);
+		chordImpl.broadcast(target, handleHit);
+		if (handleHit)
+			GUIMessageQueue.getInstance().addMessage("The Shoot on the ID: " + target + " was a hit!");
+		else
+			GUIMessageQueue.getInstance().addMessage("The Shoot on the ID: " + target + " was not a hit!");
+		if (ownPlayer.getRemainingShips() != 0) {
 			shoot();
-			testCounter++;
+		} else {
+			GUIMessageQueue.getInstance().addMessage("I lose!!! Game Over!!!");
 		}
+	}
+
+	private Boolean handleHit(ID target) {
+		return ownPlayer.shipHitted(target);
 	}
 
 	@Override
 	public void broadcast(ID source, ID target, Boolean hit) {
-		GUIMessageQueue.getInstance().addMessage("Broadcast from: " + source.toString() + "\nto: " + target.toString() + "\nhit: " + hit.toString() + "\n");
+		Player shootedPlayer = null;
+		findPlayer: for (Player player : playerList) {
+			if (player.getPlayerID().compareTo(source) == 0) {
+				shootedPlayer = player;
+				break findPlayer;
+			}
+		}
+		if (shootedPlayer != null) {
+			int hittedSector = shootedPlayer.shootInIntervalOfPlayer(target);
+			shootedPlayer.setHittedSector(hittedSector, hit);
+			if (hit)
+				GUIMessageQueue.getInstance().addMessage(
+						"Broadcast from: " + source.toString() + "\nto: " + target.toString() + "\nhit: " + hit.toString() + "\n");
+			if (shootedPlayer.getRemainingShips() < 1)
+				GUIMessageQueue.getInstance().addMessage("Player with ID: " + source.toString() + " lose!!");
+		} else
+			GUIMessageQueue.getInstance().addMessage("Something went wrong with incomming Broadcast!");
 	}
 
 	@Override
@@ -93,16 +115,21 @@ public class GameState implements NotifyCallback {
 
 	private void shoot() {
 		if (playerList.size() > 0) {
-			Player target = playerList.get(0);
-			if (target.getPlayerID().compareTo(chordImpl.getID()) == 0)
-				System.out.println("Falsch");
-			Sector targetSector = target.getPlayerFields()[randBetween(0, target.getPlayerFields().length)];
+			Player target = null;
+			int remainingShips = SHIP_COUNT + 1;
+			for (Player player : playerList) {
+				if(player.getRemainingShips() < remainingShips){
+					target = player;
+					remainingShips = player.getRemainingShips();
+				}
+			}
+			Sector targetSector = target.findFreeSector();
 			ShootingThread st = new ShootingThread(chordImpl, targetSector.getMiddle());
 			st.start();
 		}
 	}
 
-	private int randBetween(int min, int max) {
+	protected static int randBetween(int min, int max) {
 		Random rand = new Random();
 		return rand.nextInt(max - (min + 1)) + min;
 	}
