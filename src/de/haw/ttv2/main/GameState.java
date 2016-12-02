@@ -58,12 +58,11 @@ public class GameState implements NotifyCallback {
 
 	@Override
 	public void retrieved(ID target) {
-		// chordImpl.broadcast(target, false);
-		GUIMessageQueue.getInstance().addMessage("ID: " + target + "\n");
+		chordImpl.broadcast(target, false);
+		GUIMessageQueue.getInstance().addMessage("Get Shoot on ID: " + target + "\n");
 		if (testCounter < 10) {
-			// shoot();
+			shoot();
 			testCounter++;
-			System.out.println(testCounter);
 		}
 	}
 
