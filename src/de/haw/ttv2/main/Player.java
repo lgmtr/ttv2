@@ -131,9 +131,11 @@ public class Player implements Comparable<Player> {
 
 	public Boolean shipHitted(ID target) {
 		final int fieldID = shootInIntervalOfPlayer(target);
-		if (fieldID > 0)
-			if (shipInField[fieldID])
+		if (fieldID > -1)
+			if (shipInField[fieldID]){
+				remainingShips--;
 				return true;
+			}
 		return false;
 	}
 

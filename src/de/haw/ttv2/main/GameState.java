@@ -19,6 +19,8 @@ public class GameState implements NotifyCallback {
 
 	public static final ID MAXID = ID.valueOf(((BigInteger.valueOf(2).pow(160)).subtract(BigInteger.valueOf(1))));
 
+	private static final String WIN_LOSE_SEPERATOR = "\n==============================================================================\n";
+
 	public static final int SECTOR_COUNT = 100;
 
 	public static final int SHIP_COUNT = 10;
@@ -63,7 +65,7 @@ public class GameState implements NotifyCallback {
 		if (ownPlayer.getRemainingShips() > 0) {
 			shoot();
 		} else {
-			GUIMessageQueue.getInstance().addMessage("I lose!!! Game Over!!!");
+			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "I lose!!! Game Over!!!" + WIN_LOSE_SEPERATOR);
 			someoneLose = true;
 		}
 	}
@@ -84,11 +86,14 @@ public class GameState implements NotifyCallback {
 		if (shootedPlayer != null) {
 			int hittedSector = shootedPlayer.shootInIntervalOfPlayer(target);
 			shootedPlayer.setHittedSector(hittedSector, hit);
-			if (hit)
-				GUIMessageQueue.getInstance().addMessage(
-						"Broadcast from: " + source.toString() + "\nto: " + target.toString() + "\nhit: " + hit.toString() + "\n");
+			if (hit) {
+				if (source.compareTo(chordImpl.getID()) == 0)
+					GUIMessageQueue.getInstance().addMessage("I got a hit");
+				else
+					GUIMessageQueue.getInstance().addMessage("Player with ID: " + source.toString() + " got a hit");
+			}
 			if (shootedPlayer.getRemainingShips() < 1) {
-				GUIMessageQueue.getInstance().addMessage("Player with ID: " + source.toString() + " lose!!");
+				GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "Player with ID: " + source.toString() + " lose!!" + WIN_LOSE_SEPERATOR);
 				someoneLose = true;
 			}
 		} else
