@@ -58,10 +58,10 @@ public class GameState implements NotifyCallback {
 
 	@Override
 	public void retrieved(ID target) {
-//		chordImpl.broadcast(target, false);
+		// chordImpl.broadcast(target, false);
 		GUIMessageQueue.getInstance().addMessage("ID: " + target + "\n");
 		if (testCounter < 10) {
-//			shoot();
+			// shoot();
 			testCounter++;
 			System.out.println(testCounter);
 		}
@@ -86,7 +86,7 @@ public class GameState implements NotifyCallback {
 	}
 
 	public void startGame() {
-		if(chordImpl.getPredecessorID().compareTo(chordImpl.getID()) > 0) {
+		if (chordImpl.getPredecessorID().compareTo(chordImpl.getID()) > 0) {
 			GUIMessageQueue.getInstance().addMessage("I Start!");
 			shoot();
 		}
@@ -95,7 +95,7 @@ public class GameState implements NotifyCallback {
 	private void shoot() {
 		if (playerList.size() > 0) {
 			Player target = playerList.get(0);
-			if(target.getPlayerID().compareTo(chordImpl.getID()) == 0)
+			if (target.getPlayerID().compareTo(chordImpl.getID()) == 0)
 				System.out.println("Falsch");
 			Sector targetSector = target.getPlayerFields()[randBetween(0, target.getPlayerFields().length)];
 			ShootingThread st = new ShootingThread(chordImpl, targetSector.getMiddle());
@@ -109,6 +109,8 @@ public class GameState implements NotifyCallback {
 	}
 
 	public void createGamefield() {
+		if (playerList == null)
+			playerList = new ArrayList<>();
 		if (playerList.size() < 1) {
 			createGameField(chordImpl.getID());
 			Collections.sort(playerList);
