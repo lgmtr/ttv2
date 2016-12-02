@@ -39,7 +39,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import de.haw.ttv2.main.GUIMessageQueue;
 import de.uniba.wiai.lspi.chord.com.Broadcast;
 import de.uniba.wiai.lspi.chord.com.CommunicationException;
 import de.uniba.wiai.lspi.chord.com.Endpoint;
@@ -484,7 +483,7 @@ public final class NodeImpl extends Node {
     }
 
     public void asyncBroadcast(final Broadcast bc, final Node n) {
-    	GUIMessageQueue.getInstance().addMessage("Attempting asynchronous re-broadcast!");
+    	this.logger.info("Attempting asynchronous re-broadcast!");
         this.asyncExecutor.execute(new Runnable() {
             public void run() {
                 try {

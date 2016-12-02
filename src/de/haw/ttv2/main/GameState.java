@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import de.uniba.wiai.lspi.chord.com.Broadcast;
 import de.uniba.wiai.lspi.chord.com.Node;
 import de.uniba.wiai.lspi.chord.data.ID;
 import de.uniba.wiai.lspi.chord.service.NotifyCallback;
@@ -59,8 +58,6 @@ public class GameState implements NotifyCallback {
 		chordImpl.broadcast(target, handleHit);
 		if (handleHit)
 			GUIMessageQueue.getInstance().addMessage("The Shoot on the ID: " + target + " was a hit!");
-		else
-			GUIMessageQueue.getInstance().addMessage("The Shoot on the ID: " + target + " was not a hit!");
 		if (ownPlayer.getRemainingShips() != 0) {
 			shoot();
 		} else {
@@ -91,19 +88,6 @@ public class GameState implements NotifyCallback {
 				GUIMessageQueue.getInstance().addMessage("Player with ID: " + source.toString() + " lose!!");
 		} else
 			GUIMessageQueue.getInstance().addMessage("Something went wrong with incomming Broadcast!");
-	}
-
-	@Override
-	public void broadcast(Broadcast bc) {
-		// MainGUI.getInstance().outputTextArea.appendText("Broadcast from: " +
-		// bc.getSource().toString() + "\nto: " + bc.getTarget().toString() +
-		// "\nhit: "
-		// + bc.getHit().toString() + "\n");
-	}
-
-	// Test-Method
-	protected List<Player> getPlayerList() {
-		return playerList;
 	}
 
 	public void startGame() {
@@ -141,6 +125,7 @@ public class GameState implements NotifyCallback {
 			createGameField(chordImpl.getID());
 			Collections.sort(playerList);
 			playerList.remove(ownPlayer);
+			ownPlayer.setShips();
 			GUIMessageQueue.getInstance().addMessage("Field Created!");
 		}
 	}
