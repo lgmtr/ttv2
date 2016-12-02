@@ -2,15 +2,12 @@ package de.haw.ttv2.main;
 
 import java.net.MalformedURLException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -149,15 +146,10 @@ public class MainGUI extends Application {
 				System.exit(0);
 				System.out.println("Application Closed");
 			}
-		}), createButton("Broadcast", 190, 40, new EventHandler<ActionEvent>() {
+		}), createButton("Create Gamefield", 190, 40, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				broadcast();
-			}
-		}), createButton("Retrieve", 190, 40, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				retrieve();
+				gameState.createGamefield();
 			}
 		}), createButton("Start Game", 190, 40, new EventHandler<ActionEvent>() {
 			@Override
@@ -169,6 +161,7 @@ public class MainGUI extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		initChord();
 		init(primaryStage);
 		animation = new Timeline();
 		animation.getKeyFrames().add(new KeyFrame(Duration.millis(FRAME_DURATION), new EventHandler<ActionEvent>() {
@@ -181,7 +174,6 @@ public class MainGUI extends Application {
 		}));
 		animation.setCycleCount(Animation.INDEFINITE);
 		animation.play();
-		initChord();
 		primaryStage.show();
 	}
 
@@ -236,25 +228,5 @@ public class MainGUI extends Application {
 		button.setMinSize(xSize, ySize);
 		button.setOnAction(event);
 		return button;
-	}
-
-	private void broadcast() {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				Set<de.uniba.wiai.lspi.chord.com.Node> fingerSet = new HashSet<>(chordImpl.getFingerTable());
-				for (de.uniba.wiai.lspi.chord.com.Node n : fingerSet)
-					chordImpl.broadcast(n.getNodeID(), false);
-			}
-		});
-	}
-
-	private void retrieve() {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				chordImpl.retrieve(chordImpl.getFingerTable().get(0).getNodeID());
-			}
-		});
 	}
 }
