@@ -27,6 +27,8 @@ public class GameState implements NotifyCallback {
 
 	private Player ownPlayer;
 
+	private boolean someoneLose = false;
+
 	public GameState(ChordImpl chordImpl) {
 		this.chordImpl = chordImpl;
 	}
@@ -58,10 +60,11 @@ public class GameState implements NotifyCallback {
 		chordImpl.broadcast(target, handleHit);
 		if (handleHit)
 			GUIMessageQueue.getInstance().addMessage("The Shoot on the ID: " + target + " was a hit!");
-		if (ownPlayer.getRemainingShips() != 0) {
+		if (ownPlayer.getRemainingShips() > 0) {
 			shoot();
 		} else {
 			GUIMessageQueue.getInstance().addMessage("I lose!!! Game Over!!!");
+			someoneLose = true;
 		}
 	}
 
@@ -84,8 +87,10 @@ public class GameState implements NotifyCallback {
 			if (hit)
 				GUIMessageQueue.getInstance().addMessage(
 						"Broadcast from: " + source.toString() + "\nto: " + target.toString() + "\nhit: " + hit.toString() + "\n");
-			if (shootedPlayer.getRemainingShips() < 1)
+			if (shootedPlayer.getRemainingShips() < 1) {
 				GUIMessageQueue.getInstance().addMessage("Player with ID: " + source.toString() + " lose!!");
+				someoneLose = true;
+			}
 		} else
 			GUIMessageQueue.getInstance().addMessage("Something went wrong with incomming Broadcast!");
 	}
@@ -99,17 +104,19 @@ public class GameState implements NotifyCallback {
 
 	private void shoot() {
 		if (playerList.size() > 0) {
-			Player target = null;
-			int remainingShips = SHIP_COUNT + 1;
-			for (Player player : playerList) {
-				if(player.getRemainingShips() < remainingShips){
-					target = player;
-					remainingShips = player.getRemainingShips();
+			if (!someoneLose) {
+				Player target = null;
+				int remainingShips = SHIP_COUNT + 1;
+				for (Player player : playerList) {
+					if (player.getRemainingShips() < remainingShips) {
+						target = player;
+						remainingShips = player.getRemainingShips();
+					}
 				}
+				Sector targetSector = target.findFreeSector();
+				ShootingThread st = new ShootingThread(chordImpl, targetSector.getMiddle());
+				st.start();
 			}
-			Sector targetSector = target.findFreeSector();
-			ShootingThread st = new ShootingThread(chordImpl, targetSector.getMiddle());
-			st.start();
 		}
 	}
 
@@ -128,6 +135,10 @@ public class GameState implements NotifyCallback {
 			ownPlayer.setShips();
 			GUIMessageQueue.getInstance().addMessage("Field Created!");
 		}
+	}
+
+	public Player getOwnPlayer() {
+		return ownPlayer;
 	}
 
 }

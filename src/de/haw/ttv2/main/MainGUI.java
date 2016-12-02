@@ -25,6 +25,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import de.haw.ttv2.main.network.NetworkInterfaceInfo;
@@ -50,6 +52,8 @@ public class MainGUI extends Application {
 	private String ipTextField;
 	private String portTextField;
 
+	private Circle statusCircle;
+	
 	public TextArea outputTextArea;
 
 	private Timeline animation;
@@ -66,6 +70,7 @@ public class MainGUI extends Application {
 		vboxMenu.getChildren().add(cb);
 		vboxMenu.getChildren().addAll(createTextFields());
 		vboxMenu.getChildren().addAll(createServerAndClientButtons());
+		vboxMenu.getChildren().add(createStatusCircle());
 		vboxMenu.setAlignment(Pos.CENTER);
 		rightBox.getChildren().add(vboxMenu);
 		borderPane.setRight(rightBox);
@@ -80,6 +85,11 @@ public class MainGUI extends Application {
 		centerBox.setMinWidth(WINDOW_WIDTH - RIGHT_WINDOW_SIZE);
 		borderPane.setCenter(centerBox);
 		root.getChildren().add(borderPane);
+	}
+
+	private Circle createStatusCircle() {
+		statusCircle = new Circle(70, Color.GREEN);
+		return statusCircle;
 	}
 
 	private List<Node> createServerAndClientButtons() {
@@ -170,6 +180,9 @@ public class MainGUI extends Application {
 				String message = GUIMessageQueue.getInstance().getFirstMessage();
 				if (message != null)
 					outputTextArea.appendText(message + "\n");
+				if (gameState.getOwnPlayer() != null) {
+					statusCircle = new Circle(70, gameState.getOwnPlayer().getPlayerStatus().getColor());
+				}
 			}
 		}));
 		animation.setCycleCount(Animation.INDEFINITE);
