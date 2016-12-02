@@ -54,6 +54,8 @@ public class MainGUI extends Application {
 
 	private Circle statusCircle;
 	
+	private VBox vboxMenu = new VBox(10);
+	
 	public TextArea outputTextArea;
 
 	private Timeline animation;
@@ -66,7 +68,6 @@ public class MainGUI extends Application {
 		VBox rightBox = new VBox();
 		rightBox.setMinWidth(RIGHT_WINDOW_SIZE);
 		cb = createNIIAComboBox();
-		VBox vboxMenu = new VBox(10);
 		vboxMenu.getChildren().add(cb);
 		vboxMenu.getChildren().addAll(createTextFields());
 		vboxMenu.getChildren().addAll(createServerAndClientButtons());
@@ -181,7 +182,9 @@ public class MainGUI extends Application {
 				if (message != null)
 					outputTextArea.appendText(message + "\n");
 				if (gameState.getOwnPlayer() != null) {
+					vboxMenu.getChildren().remove(statusCircle);
 					statusCircle = new Circle(70, gameState.getOwnPlayer().getPlayerStatus().getColor());
+					vboxMenu.getChildren().add(statusCircle);
 				}
 			}
 		}));
