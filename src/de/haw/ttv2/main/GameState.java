@@ -76,7 +76,7 @@ public class GameState implements NotifyCallback {
 				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, dummyPlayer.getRemainingShips(), i == 0 ? playerIDList.get(playerIDList
 						.size() - 1) : playerIDList.get(i - 1), playerIDList.get(i), dummyPlayer.getAttackedFields(), dummyPlayer.getShipInField());
 			} else {
-				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, GameState.SHIP_COUNT - 1, i == 0 ? playerIDList.get(playerIDList
+				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, GameState.SHIP_COUNT, i == 0 ? playerIDList.get(playerIDList
 						.size() - 1) : playerIDList.get(i - 1), playerIDList.get(i));
 			}
 			newPlayerList.add(newPlayer);
