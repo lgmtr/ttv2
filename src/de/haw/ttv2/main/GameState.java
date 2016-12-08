@@ -98,8 +98,10 @@ public class GameState implements NotifyCallback {
 	public void retrieved(ID target) {
 		final Boolean handleHit = handleHit(target);
 		chordImpl.broadcast(target, handleHit);
-		if (handleHit)
+		if (handleHit){
 			GUIMessageQueue.getInstance().addMessage("The Shoot on the ID: " + target + " was a hit!");
+			getGameStatus();
+		}
 		if (ownPlayer.getRemainingShips() > 0) {
 			shoot();
 		} else {
@@ -142,13 +144,22 @@ public class GameState implements NotifyCallback {
 		if (hit) {
 			if (source.compareTo(chordImpl.getID()) == 0)
 				GUIMessageQueue.getInstance().addMessage("I got a hit");
-			else
+			else {
 				GUIMessageQueue.getInstance().addMessage("Player with ID: " + source.toString() + " got a hit");
+				getGameStatus();
+			}
 		}
 		if (shootedPlayer.getRemainingShips() < 1) {
 			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "Player with ID: " + source.toString() + " lose!!" + WIN_LOSE_SEPERATOR);
 			someoneLose = true;
 		}
+	}
+	
+	private String getGameStatus(){
+		String returnValue = WIN_LOSE_SEPERATOR;
+		for(Player player : playerList)
+			returnValue += "Player: " + player.getPlayerID().toString() + " || Remaining ships: " + player.getRemainingShips() + "\n";
+		return returnValue + WIN_LOSE_SEPERATOR;
 	}
 
 	public void startGame() {
@@ -195,6 +206,10 @@ public class GameState implements NotifyCallback {
 
 	public Player getOwnPlayer() {
 		return ownPlayer;
+	}
+
+	public List<Player> getPlayerList() {
+		return playerList;
 	}
 
 }
