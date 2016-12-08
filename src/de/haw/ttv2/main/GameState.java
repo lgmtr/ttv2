@@ -100,7 +100,7 @@ public class GameState implements NotifyCallback {
 		chordImpl.broadcast(target, handleHit);
 		if (handleHit){
 			GUIMessageQueue.getInstance().addMessage("The Shoot on the ID: " + target + " was a hit!");
-			getGameStatus();
+			GUIMessageQueue.getInstance().addMessage(getGameStatus());
 		}
 		if (ownPlayer.getRemainingShips() > 0) {
 			shoot();
@@ -146,7 +146,7 @@ public class GameState implements NotifyCallback {
 				GUIMessageQueue.getInstance().addMessage("I got a hit");
 			else {
 				GUIMessageQueue.getInstance().addMessage("Player with ID: " + source.toString() + " got a hit");
-				getGameStatus();
+				GUIMessageQueue.getInstance().addMessage(getGameStatus());
 			}
 		}
 		if (shootedPlayer.getRemainingShips() < 1) {
