@@ -205,6 +205,8 @@ public class MainGUI extends Application {
 						if (chordImpl.getPredecessorID().compareTo(chordImpl.getID()) > 0) {
 							startButton.setDisable(false);
 						}
+						if(!startButton.isDisabled() && chordImpl.getPredecessorID().compareTo(chordImpl.getID()) <= 0)
+							startButton.setDisable(true);
 					}
 				} catch(NullPointerException e){
 					//if catched, then game not started!

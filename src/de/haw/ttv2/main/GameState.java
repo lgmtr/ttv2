@@ -84,6 +84,7 @@ public class GameState implements NotifyCallback {
 		playerList.clear();
 		playerList.addAll(newPlayerList);
 		playerList.remove(ownPlayer);
+		GUIMessageQueue.getInstance().addMessage("Unknown Player added!");
 	}
 
 	private int containsInOldList(ID id) {
