@@ -56,6 +56,43 @@ public class GameState implements NotifyCallback {
 		}
 	}
 
+	private void recalculateGameField(ID newID) {
+		Set<Node> fingerSet = new HashSet<>(chordImpl.getFingerTable());
+		List<ID> playerIDList = new ArrayList<>();
+		for (Node node : fingerSet)
+			playerIDList.add(node.getNodeID());
+		playerIDList.add(chordImpl.getID());
+		if (!playerIDList.contains(newID))
+			playerIDList.add(newID);
+		List<Player> newPlayerList = new ArrayList<>();
+		for (int i = 0; i < playerIDList.size(); i++) {
+			Player newPlayer;
+			if (playerIDList.get(i).compareTo(chordImpl.getID()) == 0) {
+				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, ownPlayer.getRemainingShips(), i == 0 ? playerIDList.get(playerIDList
+						.size() - 1) : playerIDList.get(i - 1), playerIDList.get(i), ownPlayer.getAttackedFields(), ownPlayer.getShipInField());
+				ownPlayer = newPlayer;
+			} else if (containsInOldList(playerIDList.get(i)) >= 0) {
+				Player dummyPlayer = playerList.get(containsInOldList(playerIDList.get(i)));
+				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, dummyPlayer.getRemainingShips(), i == 0 ? playerIDList.get(playerIDList
+						.size() - 1) : playerIDList.get(i - 1), playerIDList.get(i), dummyPlayer.getAttackedFields(), dummyPlayer.getShipInField());
+			} else {
+				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, GameState.SHIP_COUNT, i == 0 ? playerIDList.get(playerIDList
+						.size() - 1) : playerIDList.get(i - 1), playerIDList.get(i));
+			}
+			newPlayerList.add(newPlayer);
+		}
+		playerList.clear();
+		playerList.addAll(newPlayerList);
+		playerList.remove(ownPlayer);
+	}
+
+	private int containsInOldList(ID id) {
+		for (Player player : playerList)
+			if (player.getPlayerID().compareTo(id) == 0)
+				return playerList.indexOf(player);
+		return -1;
+	}
+
 	@Override
 	public void retrieved(ID target) {
 		final Boolean handleHit = handleHit(target);
@@ -84,20 +121,33 @@ public class GameState implements NotifyCallback {
 			}
 		}
 		if (shootedPlayer != null) {
-			int hittedSector = shootedPlayer.shootInIntervalOfPlayer(target);
-			shootedPlayer.setHittedSector(hittedSector, hit);
-			if (hit) {
-				if (source.compareTo(chordImpl.getID()) == 0)
-					GUIMessageQueue.getInstance().addMessage("I got a hit");
-				else
-					GUIMessageQueue.getInstance().addMessage("Player with ID: " + source.toString() + " got a hit");
+			handleShoot(source, target, hit, shootedPlayer);
+		} else {
+			recalculateGameField(source);
+			findPlayer: for (Player player : playerList) {
+				if (player.getPlayerID().compareTo(source) == 0) {
+					shootedPlayer = player;
+					break findPlayer;
+				}
 			}
-			if (shootedPlayer.getRemainingShips() < 1) {
-				GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "Player with ID: " + source.toString() + " lose!!" + WIN_LOSE_SEPERATOR);
-				someoneLose = true;
-			}
-		} else
-			GUIMessageQueue.getInstance().addMessage("Something went wrong with incomming Broadcast!");
+			handleShoot(source, target, hit, shootedPlayer);
+		}
+			//GUIMessageQueue.getInstance().addMessage("Something went wrong with incoming Broadcast!");
+	}
+
+	private void handleShoot(ID source, ID target, Boolean hit, Player shootedPlayer) {
+		int hittedSector = shootedPlayer.shootInIntervalOfPlayer(target);
+		shootedPlayer.setHittedSector(hittedSector, hit);
+		if (hit) {
+			if (source.compareTo(chordImpl.getID()) == 0)
+				GUIMessageQueue.getInstance().addMessage("I got a hit");
+			else
+				GUIMessageQueue.getInstance().addMessage("Player with ID: " + source.toString() + " got a hit");
+		}
+		if (shootedPlayer.getRemainingShips() < 1) {
+			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "Player with ID: " + source.toString() + " lose!!" + WIN_LOSE_SEPERATOR);
+			someoneLose = true;
+		}
 	}
 
 	public void startGame() {

@@ -27,6 +27,14 @@ public class Player implements Comparable<Player> {
 		remainingShips = shipCount;
 		playerFields = calculatePlayerSectors(sectorCount, idRangeFrom, idRangeIdTo);
 	}
+	
+	public Player(ID playerID, int sectorCount, int shipCount, ID idRangeFrom, ID idRangeIdTo, boolean[] attackedFields, boolean[] shipInField){
+		this.playerID = playerID;
+		this.attackedFields = attackedFields;
+		this.shipInField = shipInField;
+		remainingShips = shipCount;
+		playerFields = calculatePlayerSectors(sectorCount, idRangeFrom, idRangeIdTo);
+	}
 
 	private Sector[] calculatePlayerSectors(int sectorCount, ID idRangeFrom, ID idRangeIdTo) {
 		Sector[] playerFields = new Sector[sectorCount];
@@ -159,5 +167,13 @@ public class Player implements Comparable<Player> {
 				stop = true;
 		}while(!stop);
 		return playerFields[sectorToShoot];
+	}
+
+	public boolean[] getAttackedFields() {
+		return attackedFields;
+	}
+
+	public boolean[] getShipInField() {
+		return shipInField;
 	}
 }
