@@ -2,6 +2,7 @@ package de.haw.ttv2.main;
 
 import java.net.MalformedURLException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import javafx.animation.Animation;
@@ -52,13 +53,19 @@ public class MainGUI extends Application {
 	private String ipTextField;
 	private String portTextField;
 
+	private int playerCount = 0;
+
+	private boolean gameStarted = false;
+
 	private Circle statusCircle;
-	
+
 	private VBox vboxMenu = new VBox(10);
-	
+
 	public TextArea outputTextArea;
 
 	private Timeline animation;
+
+	private Button startButton;
 
 	private void init(Stage primaryStage) {
 		Group root = new Group();
@@ -71,6 +78,7 @@ public class MainGUI extends Application {
 		vboxMenu.getChildren().add(cb);
 		vboxMenu.getChildren().addAll(createTextFields());
 		vboxMenu.getChildren().addAll(createServerAndClientButtons());
+		startButton.setDisable(true);
 		vboxMenu.getChildren().add(createStatusCircle());
 		vboxMenu.setAlignment(Pos.CENTER);
 		rightBox.getChildren().add(vboxMenu);
@@ -94,6 +102,13 @@ public class MainGUI extends Application {
 	}
 
 	private List<Node> createServerAndClientButtons() {
+		startButton = createButton("Start Game", 190, 40, new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				gameState.startGame();
+				gameStarted = true;
+			}
+		});
 		return Arrays.asList(createButton("Create Server", 190, 40, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -162,12 +177,7 @@ public class MainGUI extends Application {
 			public void handle(ActionEvent e) {
 				gameState.createGamefield();
 			}
-		}), createButton("Start Game", 190, 40, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				gameState.startGame();
-			}
-		}));
+		}), startButton);
 	}
 
 	@Override
@@ -176,6 +186,7 @@ public class MainGUI extends Application {
 		init(primaryStage);
 		animation = new Timeline();
 		animation.getKeyFrames().add(new KeyFrame(Duration.millis(FRAME_DURATION), new EventHandler<ActionEvent>() {
+
 			@Override
 			public void handle(ActionEvent arg0) {
 				String message = GUIMessageQueue.getInstance().getFirstMessage();
@@ -185,6 +196,18 @@ public class MainGUI extends Application {
 					vboxMenu.getChildren().remove(statusCircle);
 					statusCircle = new Circle(70, gameState.getOwnPlayer().getPlayerStatus().getColor());
 					vboxMenu.getChildren().add(statusCircle);
+				}
+				try{
+					final int newPlayerCount = new HashSet<>(chordImpl.getFingerTable()).size();
+					if (newPlayerCount > playerCount && !gameStarted) {
+						playerCount = newPlayerCount;
+						gameState.createGamefield();
+						if (chordImpl.getPredecessorID().compareTo(chordImpl.getID()) > 0) {
+							startButton.setDisable(false);
+						}
+					}
+				} catch(NullPointerException e){
+					//if catched, then game not started!
 				}
 			}
 		}));
