@@ -54,6 +54,7 @@ public class BroadcastLog {
 			messageLogOfHits.add(new BroadcastMsg(source, target, hit));
 	}
 
+	// Only for Tests
 	public String getMessageWithDiffrentSrc() {
 		List<BroadcastMsg> bcmList = new ArrayList<>();
 		for (int i = 0; i < messageLogOfHits.size(); i++) {
@@ -79,6 +80,7 @@ public class BroadcastLog {
 		return getBroadcastMsgFormatted(messageLog.get(messageLog.size() - 1));
 	}
 
+	// Only for Tests
 	private String getBroadcastMsgFormatted(BroadcastMsg bc) {
 		if (messageLog.size() < 1)
 			return null;
