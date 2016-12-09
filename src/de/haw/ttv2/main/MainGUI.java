@@ -192,14 +192,15 @@ public class MainGUI extends Application {
 				String message = GUIMessageQueue.getInstance().getFirstMessage();
 				if (message != null)
 					outputTextArea.appendText(message + "\n");
-				if (BroadcastLog.getInstance().getLastBroadcast() != null)
-					outputTextArea.appendText(BroadcastLog.getInstance().getLastBroadcast());
+				if (BroadcastLog.getInstance().getMessageWithDiffrentSrc() != null)
+					if (BroadcastLog.getInstance().getMessageWithDiffrentSrc().length() != 0)
+						System.out.println(BroadcastLog.getInstance().getMessageWithDiffrentSrc());
 				if (gameState.getOwnPlayer() != null) {
 					vboxMenu.getChildren().remove(statusCircle);
 					statusCircle = new Circle(70, gameState.getOwnPlayer().getPlayerStatus().getColor());
 					vboxMenu.getChildren().add(statusCircle);
 				}
-				try{
+				try {
 					final int newPlayerCount = new HashSet<>(chordImpl.getFingerTable()).size();
 					if (newPlayerCount > playerCount && !gameStarted) {
 						playerCount = newPlayerCount;
@@ -207,11 +208,11 @@ public class MainGUI extends Application {
 						if (chordImpl.getPredecessorID().compareTo(chordImpl.getID()) > 0) {
 							startButton.setDisable(false);
 						}
-						if(!startButton.isDisabled() && chordImpl.getPredecessorID().compareTo(chordImpl.getID()) <= 0)
+						if (!startButton.isDisabled() && chordImpl.getPredecessorID().compareTo(chordImpl.getID()) <= 0)
 							startButton.setDisable(true);
 					}
-				} catch(NullPointerException e){
-					//if catched, then game not started!
+				} catch (NullPointerException e) {
+					// if catched, then game not started!
 				}
 			}
 		}));
