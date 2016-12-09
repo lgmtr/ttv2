@@ -1,7 +1,9 @@
 package de.haw.ttv2.main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.uniba.wiai.lspi.chord.data.ID;
 
@@ -38,7 +40,7 @@ public class BroadcastLog {
 			return hit;
 		}
 	}
-
+	
 	public static synchronized BroadcastLog getInstance() {
 		if (instance == null) {
 			instance = new BroadcastLog();
@@ -52,6 +54,26 @@ public class BroadcastLog {
 		messageLog.add(new BroadcastMsg(source, target, hit));
 		if (hit)
 			messageLogOfHits.add(new BroadcastMsg(source, target, hit));
+	}
+	
+	public ID hasSomeLose(){
+		Map<ID, List<BroadcastMsg>> hittingMap = new HashMap<>();
+		for (BroadcastMsg hittingListItem : messageLogOfHits) {
+			if(hittingMap.containsKey(hittingListItem.getSource())) {
+				List<BroadcastMsg> bcmList = hittingMap.get(hittingListItem.getSource());
+				bcmList.add(hittingListItem);
+				hittingMap.replace(hittingListItem.getSource(), bcmList);
+			} else {
+				List<BroadcastMsg> bcmList = new ArrayList<>();
+				bcmList.add(hittingListItem);
+				hittingMap.put(hittingListItem.getSource(), bcmList);
+			}
+		}
+		for (ID id : hittingMap.keySet()) {
+			if(hittingMap.get(id).size() >= GameState.SHIP_COUNT)
+				return id;
+		}
+		return null;
 	}
 
 	// Only for Tests
