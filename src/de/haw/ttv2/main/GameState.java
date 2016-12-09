@@ -100,7 +100,6 @@ public class GameState implements NotifyCallback {
 		chordImpl.broadcast(target, handleHit);
 		if (handleHit){
 			GUIMessageQueue.getInstance().addMessage("The Shoot on the ID: " + target + " was a hit!");
-			GUIMessageQueue.getInstance().addMessage(getGameStatus());
 		}
 		if (ownPlayer.getRemainingShips() > 0) {
 			shoot();
@@ -116,6 +115,7 @@ public class GameState implements NotifyCallback {
 
 	@Override
 	public void broadcast(ID source, ID target, Boolean hit) {
+		BroadcastLog.getInstance().addBroadcast(source, target, hit);
 		Player shootedPlayer = null;
 		findPlayer: for (Player player : playerList) {
 			if (player.getPlayerID().compareTo(source) == 0) {
@@ -135,7 +135,6 @@ public class GameState implements NotifyCallback {
 			}
 			handleShoot(source, target, hit, shootedPlayer);
 		}
-			//GUIMessageQueue.getInstance().addMessage("Something went wrong with incoming Broadcast!");
 	}
 
 	private void handleShoot(ID source, ID target, Boolean hit, Player shootedPlayer) {
@@ -146,7 +145,6 @@ public class GameState implements NotifyCallback {
 				GUIMessageQueue.getInstance().addMessage("I got a hit");
 			else {
 				GUIMessageQueue.getInstance().addMessage("Player with ID: " + source.toString() + " got a hit");
-				GUIMessageQueue.getInstance().addMessage(getGameStatus());
 			}
 		}
 		if (shootedPlayer.getRemainingShips() < 1) {
@@ -155,13 +153,6 @@ public class GameState implements NotifyCallback {
 		}
 	}
 	
-	private String getGameStatus(){
-		String returnValue = WIN_LOSE_SEPERATOR;
-		for(Player player : playerList)
-			returnValue += "Player: " + player.getPlayerID().toString() + " || Remaining ships: " + player.getRemainingShips() + "\n";
-		return returnValue + WIN_LOSE_SEPERATOR;
-	}
-
 	public void startGame() {
 		if (chordImpl.getPredecessorID().compareTo(chordImpl.getID()) > 0) {
 			GUIMessageQueue.getInstance().addMessage("I Start!");

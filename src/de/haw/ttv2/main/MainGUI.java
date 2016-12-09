@@ -192,6 +192,8 @@ public class MainGUI extends Application {
 				String message = GUIMessageQueue.getInstance().getFirstMessage();
 				if (message != null)
 					outputTextArea.appendText(message + "\n");
+				if (BroadcastLog.getInstance().getLastBroadcast() != null)
+					outputTextArea.appendText(BroadcastLog.getInstance().getLastBroadcast());
 				if (gameState.getOwnPlayer() != null) {
 					vboxMenu.getChildren().remove(statusCircle);
 					statusCircle = new Circle(70, gameState.getOwnPlayer().getPlayerStatus().getColor());
