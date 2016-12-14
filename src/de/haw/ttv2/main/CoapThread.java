@@ -8,12 +8,12 @@ import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
 public class CoapThread implements Runnable {
 
-	private String coapCommand;
-	
-	public CoapThread(String coapCommand) {
+	private PlayerStatusEnum coapCommand;
+
+	public CoapThread(PlayerStatusEnum coapCommand) {
 		this.coapCommand = coapCommand;
 	}
-	
+
 	@Override
 	public void run() {
 		URI address;
@@ -21,11 +21,25 @@ public class CoapThread implements Runnable {
 			address = new URI("coap://localhost/led");
 			CoapClient client = new CoapClient(address);
 			client.put("0", MediaTypeRegistry.TEXT_PLAIN);
-			client.put(PlayerStatusEnum.VIOLET.getCoapCode(), MediaTypeRegistry.TEXT_PLAIN);
+			switch (coapCommand) {
+			case RED:
+				client.put(PlayerStatusEnum.RED.getCoapCode(), MediaTypeRegistry.TEXT_PLAIN);
+				break;
+			case BLUE:
+				client.put(PlayerStatusEnum.BLUE.getCoapCode(), MediaTypeRegistry.TEXT_PLAIN);
+				break;
+			case GREEN:
+				client.put(PlayerStatusEnum.GREEN.getCoapCode(), MediaTypeRegistry.TEXT_PLAIN);
+				break;
+			case VIOLET:
+				client.put(PlayerStatusEnum.RED.getCoapCode(), MediaTypeRegistry.TEXT_PLAIN);
+				client.put(PlayerStatusEnum.BLUE.getCoapCode(), MediaTypeRegistry.TEXT_PLAIN);
+				break;
+			}
 			client.put("1", MediaTypeRegistry.TEXT_PLAIN);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
-		}	
+		}
 	}
 
 }
