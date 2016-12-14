@@ -4,15 +4,18 @@ import javafx.scene.paint.Color;
 
 public enum PlayerStatusEnum {
 	
-	GREEN(Color.GREEN),
-	BLUE(Color.BLUE),
-	VIOLET(Color.VIOLET),
-	RED(Color.RED);
+	GREEN(Color.GREEN, "g"),
+	BLUE(Color.BLUE, "b"),
+	VIOLET(Color.VIOLET, "v"),
+	RED(Color.RED, "r");
 
 	private Color color;
 	
-	private PlayerStatusEnum(Color color) {
+	private String coapCode;
+	
+	private PlayerStatusEnum(Color color,String coapCode) {
 		this.color = color;
+		this.coapCode = coapCode;
 	}
 
 	public Color getColor() {
@@ -22,7 +25,13 @@ public enum PlayerStatusEnum {
 	public void setColor(Color color) {
 		this.color = color;
 	}
-	
-	
+
+	public String getCoapCode() {
+		return coapCode;
+	}
+
+	public void setCoapCode(String coapCode) {
+		this.coapCode = coapCode;
+	}
 	
 }

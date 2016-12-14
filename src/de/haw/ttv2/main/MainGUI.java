@@ -257,6 +257,8 @@ public class MainGUI extends Application {
 				if (gameState.getOwnPlayer() != null) {
 					vboxMenu.getChildren().remove(statusCircle);
 					statusCircle = new Circle(70, gameState.getOwnPlayer().getPlayerStatus().getColor());
+					Thread t = new Thread(new CoapThread(gameState.getOwnPlayer().getPlayerStatus().getCoapCode()));
+					t.start();
 					vboxMenu.getChildren().add(statusCircle);
 				}
 				try {
