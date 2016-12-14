@@ -276,9 +276,10 @@ public class MainGUI extends Application {
 				Map<ID, List<BroadcastMsg>> bclHittingMap = BroadcastLog.getInstance().getHittingMap();
 				Map<ID, List<BroadcastMsg>> bclMap = BroadcastLog.getInstance().getLogMap();
 				tilePane.getChildren().clear();
-				tilePane.getChildren().add(
-						createItem(chordImpl.getID(), (GameState.SHIP_COUNT - gameState.getOwnPlayer().getRemainingShips()) * (GameState.SHIP_COUNT / 100),
-								gameState.getOwnPlayer().getPlayerStatus().getColor()));
+				if (gameState.getOwnPlayer() != null)
+					tilePane.getChildren().add(
+							createItem(chordImpl.getID(), (GameState.SHIP_COUNT - gameState.getOwnPlayer().getRemainingShips()) * (GameState.SHIP_COUNT / 100),
+									gameState.getOwnPlayer().getPlayerStatus().getColor()));
 				for (ID id : bclMap.keySet()) {
 					if (bclHittingMap.get(id) != null) {
 						tilePane.getChildren().add(
