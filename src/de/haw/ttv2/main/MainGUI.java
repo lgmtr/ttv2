@@ -79,7 +79,7 @@ public class MainGUI extends Application {
 	private Timeline animation;
 
 	private Button startButton;
-	
+
 	private TilePane tilePane;
 
 	private void init(Stage primaryStage) {
@@ -87,7 +87,7 @@ public class MainGUI extends Application {
 		primaryStage.setResizable(false);
 		primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
 		BorderPane borderPane = new BorderPane();
-		//Menu
+		// Menu
 		VBox rightBox = new VBox();
 		rightBox.setMinWidth(RIGHT_WINDOW_SIZE);
 		cb = createNIIAComboBox();
@@ -99,18 +99,20 @@ public class MainGUI extends Application {
 		vboxMenu.setAlignment(Pos.CENTER);
 		rightBox.getChildren().add(vboxMenu);
 		borderPane.setRight(rightBox);
-		//Infobox
-//		VBox centerBox = new VBox();
-//		outputTextArea = new TextArea();
-//		outputTextArea.setMinSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 20, WINDOW_HEIGHT);
-//		outputTextArea.setMaxSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 20, WINDOW_HEIGHT);
-//		VBox vboxCenter = new VBox();
-//		vboxCenter.getChildren().add(outputTextArea);
-//		vboxCenter.setAlignment(Pos.CENTER);
-//		centerBox.getChildren().add(vboxCenter);
-//		centerBox.setMinWidth(WINDOW_WIDTH - RIGHT_WINDOW_SIZE);
-//		borderPane.setCenter(centerBox);
-//		root.getChildren().add(borderPane);
+		// Infobox
+		// VBox centerBox = new VBox();
+		// outputTextArea = new TextArea();
+		// outputTextArea.setMinSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 20,
+		// WINDOW_HEIGHT);
+		// outputTextArea.setMaxSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 20,
+		// WINDOW_HEIGHT);
+		// VBox vboxCenter = new VBox();
+		// vboxCenter.getChildren().add(outputTextArea);
+		// vboxCenter.setAlignment(Pos.CENTER);
+		// centerBox.getChildren().add(vboxCenter);
+		// centerBox.setMinWidth(WINDOW_WIDTH - RIGHT_WINDOW_SIZE);
+		// borderPane.setCenter(centerBox);
+		// root.getChildren().add(borderPane);
 		VBox centerBox = new VBox();
 		TabPane tabPane = new TabPane();
 		tabPane.setPrefSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 5, WINDOW_HEIGHT);
@@ -135,7 +137,7 @@ public class MainGUI extends Application {
 		borderPane.setCenter(tabPane);
 		root.getChildren().add(borderPane);
 	}
-	
+
 	private BorderPane createItem(ID player, double progress, Color color) {
 		BorderPane borderPane = new BorderPane();
 		VBox rightBox = new VBox(5);
@@ -147,9 +149,9 @@ public class MainGUI extends Application {
 		rightBox.setAlignment(Pos.CENTER);
 		borderPane.setRight(rightBox);
 		VBox centerBox = new VBox(5);
-		centerBox.setMinWidth(310);
+		centerBox.setMinWidth(350);
 		centerBox.setMinHeight(100);
-		centerBox.setMaxWidth(310);
+		centerBox.setMaxWidth(350);
 		centerBox.setMaxHeight(100);
 		Text idText = new Text(player.toString());
 		Label idLabel = new Label("Player ID", idText);
@@ -162,8 +164,7 @@ public class MainGUI extends Application {
 		prLabel.setContentDisplay(ContentDisplay.BOTTOM);
 		centerBox.getChildren().add(prLabel);
 		borderPane.setCenter(centerBox);
-		borderPane.setBorder(new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(15),
-				BorderStroke.THIN)));
+		borderPane.setBorder(new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(15), BorderStroke.THIN)));
 		return borderPane;
 	}
 
@@ -285,12 +286,17 @@ public class MainGUI extends Application {
 				} catch (NullPointerException e) {
 					// if catched, then game not started!
 				}
-				Map<ID, List<BroadcastMsg>> bclMap = BroadcastLog.getInstance().getHittingMap();
+				Map<ID, List<BroadcastMsg>> bclHittingMap = BroadcastLog.getInstance().getHittingMap();
+				Map<ID, List<BroadcastMsg>> bclMap = BroadcastLog.getInstance().getLogMap();
 				tilePane.getChildren().clear();
 				for (ID id : bclMap.keySet()) {
-					tilePane.getChildren().add(
-							createItem(id, bclMap.get(id).size() * (GameState.SHIP_COUNT / 100),
-									getPlayerStatus(GameState.SHIP_COUNT - bclMap.get(id).size()).getColor()));
+					if (bclHittingMap.get(id) != null) {
+						tilePane.getChildren().add(
+								createItem(id, bclMap.get(id).size() * (GameState.SHIP_COUNT / 100),
+										getPlayerStatus(GameState.SHIP_COUNT - bclMap.get(id).size()).getColor()));
+					} else {
+						tilePane.getChildren().add(createItem(id, 0, PlayerStatusEnum.GREEN.getColor()));
+					}
 				}
 			}
 		}));
@@ -298,7 +304,7 @@ public class MainGUI extends Application {
 		animation.play();
 		primaryStage.show();
 	}
-	
+
 	private PlayerStatusEnum getPlayerStatus(int remainingShips) {
 		if (GameState.SHIP_COUNT == remainingShips) {
 			return PlayerStatusEnum.GREEN;
@@ -309,7 +315,7 @@ public class MainGUI extends Application {
 		} else
 			return PlayerStatusEnum.RED;
 	}
-	
+
 	private boolean shipCountBetween(int a, int b, int remainingShips) {
 		if (a <= remainingShips && b > remainingShips)
 			return true;

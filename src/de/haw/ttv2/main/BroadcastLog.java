@@ -72,6 +72,22 @@ public class BroadcastLog {
 		return hittingMap;
 	}
 	
+	public Map<ID, List<BroadcastMsg>> getLogMap(){
+		Map<ID, List<BroadcastMsg>> logMap = new HashMap<>();
+		for (BroadcastMsg logListItem : messageLog) {
+			if(logMap.containsKey(logListItem.getSource())) {
+				List<BroadcastMsg> bcmList = logMap.get(logListItem.getSource());
+				bcmList.add(logListItem);
+				logMap.replace(logListItem.getSource(), bcmList);
+			} else {
+				List<BroadcastMsg> bcmList = new ArrayList<>();
+				bcmList.add(logListItem);
+				logMap.put(logListItem.getSource(), bcmList);
+			}
+		}
+		return logMap;
+	}
+	
 	public ID hasSomeoneLost(){
 		Map<ID, List<BroadcastMsg>> hittingMap = getHittingMap();
 		for (ID id : hittingMap.keySet()) {

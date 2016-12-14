@@ -101,9 +101,9 @@ public class MainGUITest extends Application {
 		rightBox.setAlignment(Pos.CENTER);
 		borderPane.setRight(rightBox);
 		VBox centerBox = new VBox(5);
-		centerBox.setMinWidth(310);
+		centerBox.setMinWidth(350);
 		centerBox.setMinHeight(100);
-		centerBox.setMaxWidth(310);
+		centerBox.setMaxWidth(350);
 		centerBox.setMaxHeight(100);
 		Text idText = new Text(player.toString());
 		Label idLabel = new Label("Player ID", idText);
