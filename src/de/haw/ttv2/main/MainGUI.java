@@ -283,7 +283,7 @@ public class MainGUI extends Application {
 				for (ID id : bclMap.keySet()) {
 					if (bclHittingMap.get(id) != null) {
 						tilePane.getChildren().add(
-								createItem(id, bclHittingMap.get(id).size() * (GameState.SHIP_COUNT / 100),
+								createItem(id, (double) bclHittingMap.get(id).size() * ((double) GameState.SHIP_COUNT / 100d),
 										getPlayerStatus(GameState.SHIP_COUNT - bclHittingMap.get(id).size()).getColor()));
 					} else {
 						tilePane.getChildren().add(createItem(id, 0, PlayerStatusEnum.GREEN.getColor()));

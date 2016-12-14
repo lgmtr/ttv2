@@ -111,7 +111,7 @@ public class MainGUITest extends Application {
 		centerBox.getChildren().add(idLabel);
 		ProgressBar playerProgress = new ProgressBar();
 		playerProgress.setProgress(progress);
-		playerProgress.setMinWidth(300);
+		playerProgress.setMinWidth(350);
 		Label prLabel = new Label("Player hitted ships", playerProgress);
 		prLabel.setContentDisplay(ContentDisplay.BOTTOM);
 		centerBox.getChildren().add(prLabel);
@@ -138,7 +138,7 @@ public class MainGUITest extends Application {
 				tilePane.getChildren().clear();
 				for (ID id : bclMap.keySet()) {
 					tilePane.getChildren().add(
-							createItem(id, bclMap.get(id).size() * (GameState.SHIP_COUNT / 100),
+							createItem(id, (double) bclMap.get(id).size() * ((double) GameState.SHIP_COUNT / 100d),
 									getPlayerStatus(GameState.SHIP_COUNT - bclMap.get(id).size()).getColor()));
 				}
 			}
