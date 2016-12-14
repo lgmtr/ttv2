@@ -100,19 +100,6 @@ public class MainGUI extends Application {
 		rightBox.getChildren().add(vboxMenu);
 		borderPane.setRight(rightBox);
 		// Infobox
-		// VBox centerBox = new VBox();
-		// outputTextArea = new TextArea();
-		// outputTextArea.setMinSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 20,
-		// WINDOW_HEIGHT);
-		// outputTextArea.setMaxSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 20,
-		// WINDOW_HEIGHT);
-		// VBox vboxCenter = new VBox();
-		// vboxCenter.getChildren().add(outputTextArea);
-		// vboxCenter.setAlignment(Pos.CENTER);
-		// centerBox.getChildren().add(vboxCenter);
-		// centerBox.setMinWidth(WINDOW_WIDTH - RIGHT_WINDOW_SIZE);
-		// borderPane.setCenter(centerBox);
-		// root.getChildren().add(borderPane);
 		VBox centerBox = new VBox();
 		TabPane tabPane = new TabPane();
 		tabPane.setPrefSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 5, WINDOW_HEIGHT);
@@ -289,6 +276,9 @@ public class MainGUI extends Application {
 				Map<ID, List<BroadcastMsg>> bclHittingMap = BroadcastLog.getInstance().getHittingMap();
 				Map<ID, List<BroadcastMsg>> bclMap = BroadcastLog.getInstance().getLogMap();
 				tilePane.getChildren().clear();
+				tilePane.getChildren().add(
+						createItem(chordImpl.getID(), (GameState.SHIP_COUNT - gameState.getOwnPlayer().getRemainingShips()) * (GameState.SHIP_COUNT / 100),
+								gameState.getOwnPlayer().getPlayerStatus().getColor()));
 				for (ID id : bclMap.keySet()) {
 					if (bclHittingMap.get(id) != null) {
 						tilePane.getChildren().add(
