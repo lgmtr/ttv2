@@ -120,7 +120,6 @@ public class MainGUI extends Application {
 		tab1.setText("Text Output");
 		Tab tab2 = new Tab();
 		tab2.setText("Visual Output");
-		TextArea outputTextArea = new TextArea();
 		outputTextArea.setMinSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 10, WINDOW_HEIGHT - 30);
 		outputTextArea.setMaxSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 10, WINDOW_HEIGHT - 30);
 		VBox vboxCenter = new VBox();
