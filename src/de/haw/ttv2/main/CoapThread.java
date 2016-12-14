@@ -36,7 +36,6 @@ public class CoapThread implements Runnable {
 				client.put(PlayerStatusEnum.BLUE.getCoapCode(), MediaTypeRegistry.TEXT_PLAIN);
 				break;
 			}
-			client.put("1", MediaTypeRegistry.TEXT_PLAIN);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
