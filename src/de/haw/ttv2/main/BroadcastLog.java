@@ -17,7 +17,7 @@ public class BroadcastLog {
 
 	private static final String WIN_LOSE_SEPERATOR = "\n==============================================================================\n";
 
-	private class BroadcastMsg {
+	public class BroadcastMsg {
 		private ID source;
 		private ID target;
 		private Boolean hit;
@@ -56,7 +56,7 @@ public class BroadcastLog {
 			messageLogOfHits.add(new BroadcastMsg(source, target, hit));
 	}
 	
-	public ID hasSomeLose(){
+	public Map<ID, List<BroadcastMsg>> getHittingMap(){
 		Map<ID, List<BroadcastMsg>> hittingMap = new HashMap<>();
 		for (BroadcastMsg hittingListItem : messageLogOfHits) {
 			if(hittingMap.containsKey(hittingListItem.getSource())) {
@@ -69,6 +69,11 @@ public class BroadcastLog {
 				hittingMap.put(hittingListItem.getSource(), bcmList);
 			}
 		}
+		return hittingMap;
+	}
+	
+	public ID hasSomeoneLost(){
+		Map<ID, List<BroadcastMsg>> hittingMap = getHittingMap();
 		for (ID id : hittingMap.keySet()) {
 			if(hittingMap.get(id).size() >= GameState.SHIP_COUNT)
 				return id;

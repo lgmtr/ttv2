@@ -116,9 +116,9 @@ public class GameState implements NotifyCallback {
 	@Override
 	public void broadcast(ID source, ID target, Boolean hit) {
 		BroadcastLog.getInstance().addBroadcast(source, target, hit);
-		ID hasSomeLose = BroadcastLog.getInstance().hasSomeLose();
+		ID hasSomeLose = BroadcastLog.getInstance().hasSomeoneLost();
 		if (hasSomeLose != null)
-			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "Player with ID: " + hasSomeLose + " lose!!" + WIN_LOSE_SEPERATOR);
+			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "Player with ID: " + hasSomeLose + " lost!!" + WIN_LOSE_SEPERATOR);
 		else {
 			Player shootedPlayer = null;
 			findPlayer: for (Player player : playerList) {
@@ -153,7 +153,7 @@ public class GameState implements NotifyCallback {
 			}
 		}
 		if (shootedPlayer.getRemainingShips() < 1) {
-			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "Player with ID: " + source.toString() + " lose!!" + WIN_LOSE_SEPERATOR);
+			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "Player with ID: " + source.toString() + " lost!!" + WIN_LOSE_SEPERATOR);
 			someoneLose = true;
 		}
 	}

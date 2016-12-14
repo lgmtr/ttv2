@@ -72,6 +72,7 @@ public class MainGUI extends Application {
 		primaryStage.setResizable(false);
 		primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
 		BorderPane borderPane = new BorderPane();
+		//Menu
 		VBox rightBox = new VBox();
 		rightBox.setMinWidth(RIGHT_WINDOW_SIZE);
 		cb = createNIIAComboBox();
@@ -83,6 +84,7 @@ public class MainGUI extends Application {
 		vboxMenu.setAlignment(Pos.CENTER);
 		rightBox.getChildren().add(vboxMenu);
 		borderPane.setRight(rightBox);
+		//Infobox
 		VBox centerBox = new VBox();
 		outputTextArea = new TextArea();
 		outputTextArea.setMinSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 20, WINDOW_HEIGHT);

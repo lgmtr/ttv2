@@ -91,7 +91,6 @@ public class Player implements Comparable<Player> {
 			return PlayerStatusEnum.VIOLET;
 		} else
 			return PlayerStatusEnum.RED;
-
 	}
 
 	public void setShips() {
