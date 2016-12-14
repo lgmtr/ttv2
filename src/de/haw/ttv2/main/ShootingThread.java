@@ -18,9 +18,9 @@ public class ShootingThread extends Thread {
 	public void run() {
 		synchronized (this) {
             try {
-                this.wait(300);
+//                this.wait(300);
                 chord.retrieve(target);
-            } catch (ServiceException | InterruptedException e) {
+            } catch (ServiceException e) {
                 e.printStackTrace();
             }
         }
