@@ -74,7 +74,8 @@ public class BroadcastLog {
 	
 	public Map<ID, List<BroadcastMsg>> getLogMap(){
 		Map<ID, List<BroadcastMsg>> logMap = new HashMap<>();
-		for (BroadcastMsg logListItem : messageLog) {
+		List<BroadcastMsg> messageLogCopy = new ArrayList<>(messageLog);
+		for (BroadcastMsg logListItem : messageLogCopy) {
 			if(logMap.containsKey(logListItem.getSource())) {
 				List<BroadcastMsg> bcmList = logMap.get(logListItem.getSource());
 				bcmList.add(logListItem);
