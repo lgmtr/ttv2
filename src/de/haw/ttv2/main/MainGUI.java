@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -15,6 +16,7 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -22,15 +24,26 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import de.haw.ttv2.main.BroadcastLog.BroadcastMsg;
 import de.haw.ttv2.main.network.NetworkInterfaceInfo;
+import de.uniba.wiai.lspi.chord.data.ID;
 import de.uniba.wiai.lspi.chord.data.URL;
 import de.uniba.wiai.lspi.chord.service.PropertiesLoader;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
@@ -66,6 +79,8 @@ public class MainGUI extends Application {
 	private Timeline animation;
 
 	private Button startButton;
+	
+	private TilePane tilePane;
 
 	private void init(Stage primaryStage) {
 		Group root = new Group();
@@ -85,17 +100,71 @@ public class MainGUI extends Application {
 		rightBox.getChildren().add(vboxMenu);
 		borderPane.setRight(rightBox);
 		//Infobox
+//		VBox centerBox = new VBox();
+//		outputTextArea = new TextArea();
+//		outputTextArea.setMinSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 20, WINDOW_HEIGHT);
+//		outputTextArea.setMaxSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 20, WINDOW_HEIGHT);
+//		VBox vboxCenter = new VBox();
+//		vboxCenter.getChildren().add(outputTextArea);
+//		vboxCenter.setAlignment(Pos.CENTER);
+//		centerBox.getChildren().add(vboxCenter);
+//		centerBox.setMinWidth(WINDOW_WIDTH - RIGHT_WINDOW_SIZE);
+//		borderPane.setCenter(centerBox);
+//		root.getChildren().add(borderPane);
 		VBox centerBox = new VBox();
-		outputTextArea = new TextArea();
-		outputTextArea.setMinSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 20, WINDOW_HEIGHT);
-		outputTextArea.setMaxSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 20, WINDOW_HEIGHT);
+		TabPane tabPane = new TabPane();
+		tabPane.setPrefSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 5, WINDOW_HEIGHT);
+		tabPane.setSide(Side.TOP);
+		tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+		Tab tab1 = new Tab();
+		tab1.setText("Text Output");
+		Tab tab2 = new Tab();
+		tab2.setText("Visual Output");
+		TextArea outputTextArea = new TextArea();
+		outputTextArea.setMinSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 10, WINDOW_HEIGHT - 30);
+		outputTextArea.setMaxSize((WINDOW_WIDTH - RIGHT_WINDOW_SIZE) - 10, WINDOW_HEIGHT - 30);
 		VBox vboxCenter = new VBox();
 		vboxCenter.getChildren().add(outputTextArea);
 		vboxCenter.setAlignment(Pos.CENTER);
 		centerBox.getChildren().add(vboxCenter);
 		centerBox.setMinWidth(WINDOW_WIDTH - RIGHT_WINDOW_SIZE);
-		borderPane.setCenter(centerBox);
+		tab1.setContent(centerBox);
+		tilePane = new TilePane();
+		tab2.setContent(tilePane);
+		tabPane.getTabs().addAll(tab1, tab2);
+		borderPane.setCenter(tabPane);
 		root.getChildren().add(borderPane);
+	}
+	
+	private BorderPane createItem(ID player, double progress, Color color) {
+		BorderPane borderPane = new BorderPane();
+		VBox rightBox = new VBox(5);
+		rightBox.setMinWidth(70);
+		rightBox.setMinHeight(100);
+		rightBox.setMaxWidth(70);
+		rightBox.setMaxHeight(100);
+		rightBox.getChildren().add(new Circle(30, color));
+		rightBox.setAlignment(Pos.CENTER);
+		borderPane.setRight(rightBox);
+		VBox centerBox = new VBox(5);
+		centerBox.setMinWidth(310);
+		centerBox.setMinHeight(100);
+		centerBox.setMaxWidth(310);
+		centerBox.setMaxHeight(100);
+		Text idText = new Text(player.toString());
+		Label idLabel = new Label("Player ID", idText);
+		idLabel.setContentDisplay(ContentDisplay.BOTTOM);
+		centerBox.getChildren().add(idLabel);
+		ProgressBar playerProgress = new ProgressBar();
+		playerProgress.setProgress(progress);
+		playerProgress.setMinWidth(300);
+		Label prLabel = new Label("Player hitted ships", playerProgress);
+		prLabel.setContentDisplay(ContentDisplay.BOTTOM);
+		centerBox.getChildren().add(prLabel);
+		borderPane.setCenter(centerBox);
+		borderPane.setBorder(new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(15),
+				BorderStroke.THIN)));
+		return borderPane;
 	}
 
 	private Circle createStatusCircle() {
@@ -216,11 +285,35 @@ public class MainGUI extends Application {
 				} catch (NullPointerException e) {
 					// if catched, then game not started!
 				}
+				Map<ID, List<BroadcastMsg>> bclMap = BroadcastLog.getInstance().getHittingMap();
+				tilePane.getChildren().clear();
+				for (ID id : bclMap.keySet()) {
+					tilePane.getChildren().add(
+							createItem(id, bclMap.get(id).size() * (GameState.SHIP_COUNT / 100),
+									getPlayerStatus(GameState.SHIP_COUNT - bclMap.get(id).size()).getColor()));
+				}
 			}
 		}));
 		animation.setCycleCount(Animation.INDEFINITE);
 		animation.play();
 		primaryStage.show();
+	}
+	
+	private PlayerStatusEnum getPlayerStatus(int remainingShips) {
+		if (GameState.SHIP_COUNT == remainingShips) {
+			return PlayerStatusEnum.GREEN;
+		} else if (shipCountBetween(GameState.SHIP_COUNT / 2, GameState.SHIP_COUNT, remainingShips)) {
+			return PlayerStatusEnum.BLUE;
+		} else if (shipCountBetween(1, GameState.SHIP_COUNT / 2, remainingShips)) {
+			return PlayerStatusEnum.VIOLET;
+		} else
+			return PlayerStatusEnum.RED;
+	}
+	
+	private boolean shipCountBetween(int a, int b, int remainingShips) {
+		if (a <= remainingShips && b > remainingShips)
+			return true;
+		return false;
 	}
 
 	private void initChord() {
