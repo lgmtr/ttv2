@@ -118,10 +118,10 @@ public class BroadcastLog {
 	}
 
 	// Only for Tests
-	public String getLastBroadcast() {
+	public BroadcastMsg getLastBroadcast() {
 		if (messageLog.size() < 1)
 			return null;
-		return getBroadcastMsgFormatted(messageLog.get(messageLog.size() - 1));
+		return messageLog.get(messageLog.size() - 1);
 	}
 
 	// Only for Tests

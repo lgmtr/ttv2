@@ -30,6 +30,8 @@ public class GameState implements NotifyCallback {
 	private Player ownPlayer;
 
 	private boolean someoneLose = false;
+	
+	private ID lastTarget;
 
 	public GameState(ChordImpl chordImpl) {
 		this.chordImpl = chordImpl;
@@ -117,9 +119,14 @@ public class GameState implements NotifyCallback {
 	public void broadcast(ID source, ID target, Boolean hit) {
 		BroadcastLog.getInstance().addBroadcast(source, target, hit);
 		ID hasSomeLose = BroadcastLog.getInstance().hasSomeoneLost();
-		if (hasSomeLose != null)
-			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "Player with ID: " + hasSomeLose + " lost!!" + WIN_LOSE_SEPERATOR);
-		else {
+		ID broadcastTargetID = BroadcastLog.getInstance().getLastBroadcast().getTarget();
+		if (hasSomeLose != null){
+			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "Player with ID: " + hasSomeLose + " lost!!");
+			if(lastTarget.compareTo(broadcastTargetID) == 0)
+				GUIMessageQueue.getInstance().addMessage("Last shot was from me!!!");
+			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR);
+						
+		} else {
 			Player shootedPlayer = null;
 			findPlayer: for (Player player : playerList) {
 				if (player.getPlayerID().compareTo(source) == 0) {
@@ -177,6 +184,7 @@ public class GameState implements NotifyCallback {
 					}
 				}
 				Sector targetSector = target.findFreeSector();
+				lastTarget = targetSector.getMiddle();
 				ShootingThread st = new ShootingThread(chordImpl, targetSector.getMiddle());
 				st.start();
 			}
