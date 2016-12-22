@@ -183,8 +183,6 @@ public class Player implements Comparable<Player> {
 				return false;
 			attackedFields[fieldID] = true;
 			final int freeFields = freeFields();
-			if (remainingShips == 1 && freeFields > 0)
-				return false;
 			if (remainingShips == freeFields) {
 				remainingShips--;
 				return true;
