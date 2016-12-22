@@ -22,6 +22,8 @@ public class GameState implements NotifyCallback {
 	public static final ID MAXID = ID.valueOf(((BigInteger.valueOf(2).pow(160)).subtract(BigInteger.valueOf(1))));
 
 	private static final String WIN_LOSE_SEPERATOR = "\n==============================================================================\n";
+	
+	private static final String MOD_WIN_LOSE_SEPERATOR = "==============================================================================\n";
 
 	public static final int SECTOR_COUNT = 100;
 
@@ -34,6 +36,8 @@ public class GameState implements NotifyCallback {
 	private boolean someoneLose = false;
 
 	private ID lastTarget;
+	
+	private boolean cheatMode = false;
 
 	public GameState(ChordImpl chordImpl) {
 		this.chordImpl = chordImpl;
@@ -109,11 +113,12 @@ public class GameState implements NotifyCallback {
 			shoot();
 		} else {
 			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "I lose!!! Game Over!!!" + WIN_LOSE_SEPERATOR);
-//			someoneLose = true;
 		}
 	}
 
 	private Boolean handleHit(ID target) {
+		if(cheatMode)
+			return ownPlayer.cheatedShipHitted(target);
 		return ownPlayer.shipHitted(target);
 	}
 
@@ -127,7 +132,7 @@ public class GameState implements NotifyCallback {
 					WIN_LOSE_SEPERATOR + "Player with ID: " + hasSomeLose + " in Round: " + lastBroadcast.getTransaction() + " lost!!!");
 			GUIMessageQueue.getInstance().addMessage("Last shot was from me!!!");
 			someoneLose = true;
-			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR);
+			GUIMessageQueue.getInstance().addMessage(MOD_WIN_LOSE_SEPERATOR);
 		} else {
 			Player shootedPlayer = null;
 			findPlayer: for (Player player : playerList) {
@@ -166,12 +171,6 @@ public class GameState implements NotifyCallback {
 				GUIMessageQueue.getInstance().addMessage("Player with ID: " + source.toString() + " got a hit");
 			}
 		}
-		// if (shootedPlayer.getRemainingShips() < 1) {
-		// GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR +
-		// "Player with ID: " + source.toString() + " lost!!" +
-		// WIN_LOSE_SEPERATOR);
-		// someoneLose = true;
-		// }
 	}
 
 	public void startGame() {
@@ -223,6 +222,14 @@ public class GameState implements NotifyCallback {
 
 	public List<Player> getPlayerList() {
 		return playerList;
+	}
+
+	public boolean isCheatMode() {
+		return cheatMode;
+	}
+
+	public void setCheatMode(boolean cheatMode) {
+		this.cheatMode = cheatMode;
 	}
 
 }

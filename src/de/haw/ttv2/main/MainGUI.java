@@ -183,6 +183,10 @@ public class MainGUI extends Application {
 		return Arrays.asList(createButton("Create Server", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
+				if(Integer.valueOf(tf_transactionID.getText()) == -666){
+					gameState.setCheatMode(true);
+					GUIMessageQueue.getInstance().addMessage("CheatMode activated!!!\n");
+				}
 				URL localURL = null;
 				try {
 					localURL = new URL(PROTOCOL + "://" + cb.getValue() + ":" + portTextField + "/");
@@ -206,6 +210,8 @@ public class MainGUI extends Application {
 		}), createButton("Join a Server", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
+				if(Integer.valueOf(tf_transactionID.getText()) == -666)
+					gameState.setCheatMode(true);
 				URL localURL = null;
 				try {
 					localURL = new URL(PROTOCOL + "://" + cb.getValue() + ":" + portTextField + "/");
@@ -308,7 +314,7 @@ public class MainGUI extends Application {
 				}
 				BroadcastMsg lastBroadcast = BroadcastLog.getInstance().getLastBroadcast();
 				if (lastBroadcast != null)
-					if (lastKnownTransactionID != lastBroadcast.getTransaction()){
+					if (lastKnownTransactionID != lastBroadcast.getTransaction()) {
 						lastKnownTransactionID = lastBroadcast.getTransaction();
 						tf_transactionID.setText(String.valueOf(lastKnownTransactionID));
 					}
@@ -361,8 +367,12 @@ public class MainGUI extends Application {
 			}
 		});
 		portTextField = "8585";
-		Label transactionText = createTextField("Last known TransactionID:", String.valueOf(lastKnownTransactionID), null, tf_transactionID);
-		return Arrays.asList(ipText, portText, transactionText);
+		TextField text = new TextField(String.valueOf(lastKnownTransactionID));
+		text.setMinSize(190, 20);
+		Label label = new Label("Last known TransactionID:", text);
+		label.setContentDisplay(ContentDisplay.BOTTOM);
+		tf_transactionID = text;
+		return Arrays.asList(ipText, portText, label);
 	}
 
 	private Label createTextField(String labelText, String stdText, ChangeListener<String> changeListener, TextField reference) {
