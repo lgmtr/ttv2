@@ -185,7 +185,7 @@ public class Player implements Comparable<Player> {
 			final int freeFields = freeFields();
 			if (remainingShips == 1 && freeFields > 0)
 				return false;
-			if (remainingShips == 1 && freeFields == 0) {
+			if (remainingShips == (freeFields - 1)) {
 				remainingShips--;
 				return true;
 			}
