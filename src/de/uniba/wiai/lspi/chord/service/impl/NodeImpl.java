@@ -476,8 +476,8 @@ public final class NodeImpl extends Node {
         }
         // notify game logic
         if (this.notifyCallback != null) {
-            this.notifyCallback.broadcast(info.getSource(), info.getTarget(), info.getHit());
-//            this.notifyCallback.broadcast(info);
+//            this.notifyCallback.broadcast(info.getSource(), info.getTarget(), info.getHit());
+            this.notifyCallback.broadcast(info);
         }
 
     }

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import de.haw.ttv2.main.BroadcastLog.BroadcastMsg;
+import de.uniba.wiai.lspi.chord.com.Broadcast;
 import de.uniba.wiai.lspi.chord.com.Node;
 import de.uniba.wiai.lspi.chord.data.ID;
 import de.uniba.wiai.lspi.chord.service.NotifyCallback;
@@ -30,7 +32,7 @@ public class GameState implements NotifyCallback {
 	private Player ownPlayer;
 
 	private boolean someoneLose = false;
-	
+
 	private ID lastTarget;
 
 	public GameState(ChordImpl chordImpl) {
@@ -115,19 +117,17 @@ public class GameState implements NotifyCallback {
 		return ownPlayer.shipHitted(target);
 	}
 
-	@Override
-	public void broadcast(ID source, ID target, Boolean hit) {
-		BroadcastLog.getInstance().addBroadcast(source, target, hit);
+	// @Override
+	public void broadcast(ID source, ID target, Boolean hit, Integer transaction) {
+		BroadcastLog.getInstance().addBroadcast(source, target, hit, transaction);
 		ID hasSomeLose = BroadcastLog.getInstance().hasSomeoneLost();
-		ID broadcastTargetID = BroadcastLog.getInstance().getLastBroadcast().getTarget();
-		if (hasSomeLose != null){
-			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "Player with ID: " + hasSomeLose + " lost!!");
-			if(lastTarget.compareTo(broadcastTargetID) == 0){
-				GUIMessageQueue.getInstance().addMessage("Last shot was from me!!!");
-				someoneLose = true;
-			}
+		BroadcastMsg lastBroadcast = BroadcastLog.getInstance().getLastBroadcast();
+		if (hasSomeLose != null && lastTarget.compareTo(lastBroadcast.getTarget()) == 0) {
+			GUIMessageQueue.getInstance().addMessage(
+					WIN_LOSE_SEPERATOR + "Player with ID: " + hasSomeLose + " in Round: " + lastBroadcast.getTransaction() + " lost!!!");
+			GUIMessageQueue.getInstance().addMessage("Last shot was from me!!!");
+			someoneLose = true;
 			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR);
-						
 		} else {
 			Player shootedPlayer = null;
 			findPlayer: for (Player player : playerList) {
@@ -151,6 +151,11 @@ public class GameState implements NotifyCallback {
 		}
 	}
 
+	@Override
+	public void broadcast(Broadcast bc) {
+		broadcast(bc.getSource(), bc.getTarget(), bc.getHit(), bc.getTransaction());
+	}
+
 	private void handleShoot(ID source, ID target, Boolean hit, Player shootedPlayer) {
 		int hittedSector = shootedPlayer.shootInIntervalOfPlayer(target);
 		shootedPlayer.setHittedSector(hittedSector, hit);
@@ -161,10 +166,12 @@ public class GameState implements NotifyCallback {
 				GUIMessageQueue.getInstance().addMessage("Player with ID: " + source.toString() + " got a hit");
 			}
 		}
-		if (shootedPlayer.getRemainingShips() < 1) {
-			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "Player with ID: " + source.toString() + " lost!!" + WIN_LOSE_SEPERATOR);
-			someoneLose = true;
-		}
+		// if (shootedPlayer.getRemainingShips() < 1) {
+		// GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR +
+		// "Player with ID: " + source.toString() + " lost!!" +
+		// WIN_LOSE_SEPERATOR);
+		// someoneLose = true;
+		// }
 	}
 
 	public void startGame() {

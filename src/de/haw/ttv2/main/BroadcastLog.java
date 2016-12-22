@@ -21,11 +21,13 @@ public class BroadcastLog {
 		private ID source;
 		private ID target;
 		private Boolean hit;
+		private Integer transaction;
 
-		public BroadcastMsg(ID source, ID target, Boolean hit) {
+		public BroadcastMsg(ID source, ID target, Boolean hit, Integer transaction) {
 			this.source = source;
 			this.target = target;
 			this.hit = hit;
+			this.transaction = transaction;
 		}
 
 		public ID getSource() {
@@ -39,6 +41,14 @@ public class BroadcastLog {
 		public Boolean getHit() {
 			return hit;
 		}
+
+		public Integer getTransaction() {
+			return transaction;
+		}
+
+		public void setTransaction(Integer transaction) {
+			this.transaction = transaction;
+		}
 	}
 	
 	public static synchronized BroadcastLog getInstance() {
@@ -50,10 +60,10 @@ public class BroadcastLog {
 		return instance;
 	}
 
-	public void addBroadcast(ID source, ID target, Boolean hit) {
-		messageLog.add(new BroadcastMsg(source, target, hit));
+	public void addBroadcast(ID source, ID target, Boolean hit, Integer transaction) {
+		messageLog.add(new BroadcastMsg(source, target, hit, transaction));
 		if (hit)
-			messageLogOfHits.add(new BroadcastMsg(source, target, hit));
+			messageLogOfHits.add(new BroadcastMsg(source, target, hit, transaction));
 	}
 	
 	public Map<ID, List<BroadcastMsg>> getHittingMap(){
