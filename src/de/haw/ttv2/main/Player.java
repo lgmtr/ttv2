@@ -178,20 +178,22 @@ public class Player implements Comparable<Player> {
 
 	public Boolean cheatedShipHitted(ID target) {
 		final int fieldID = shootInIntervalOfPlayer(target);
-		if (attackedFields[fieldID])
-			return false;
-		attackedFields[fieldID] = true;
-		final int freeFields = freeFields();
-		if (remainingShips == 1 && freeFields > 0)
-			return false;
-		if (remainingShips == 1 && freeFields == 0) {
-			remainingShips--;
-			return true;
-		}
-		boolean wasHit = GameState.randBetween(0, 100) > 90 ? true : false;
-		if(wasHit){
-			remainingShips--;
-			return true;
+		if (fieldID > -1) {
+			if (attackedFields[fieldID])
+				return false;
+			attackedFields[fieldID] = true;
+			final int freeFields = freeFields();
+			if (remainingShips == 1 && freeFields > 0)
+				return false;
+			if (remainingShips == 1 && freeFields == 0) {
+				remainingShips--;
+				return true;
+			}
+			boolean wasHit = GameState.randBetween(0, 100) > 95 ? true : false;
+			if (wasHit) {
+				remainingShips--;
+				return true;
+			}
 		}
 		return false;
 	}
