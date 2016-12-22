@@ -109,7 +109,7 @@ public class GameState implements NotifyCallback {
 			shoot();
 		} else {
 			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "I lose!!! Game Over!!!" + WIN_LOSE_SEPERATOR);
-			someoneLose = true;
+//			someoneLose = true;
 		}
 	}
 
