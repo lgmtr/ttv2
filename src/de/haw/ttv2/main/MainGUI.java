@@ -81,8 +81,13 @@ public class MainGUI extends Application {
 	private Button startButton;
 
 	private TilePane tilePane;
+	
+	private PlayerStatusEnum lastPlayerState;
 
 	private void init(Stage primaryStage) {
+		lastPlayerState = PlayerStatusEnum.GREEN;
+		Thread t = new Thread(new CoapThread(PlayerStatusEnum.GREEN));
+		t.start();
 		Group root = new Group();
 		primaryStage.setResizable(false);
 		primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
@@ -257,6 +262,11 @@ public class MainGUI extends Application {
 				if (gameState.getOwnPlayer() != null) {
 					vboxMenu.getChildren().remove(statusCircle);
 					statusCircle = new Circle(70, gameState.getOwnPlayer().getPlayerStatus().getColor());
+					if(lastPlayerState.compareTo(gameState.getOwnPlayer().getPlayerStatus())!=0) {
+						Thread t = new Thread(new CoapThread(gameState.getOwnPlayer().getPlayerStatus()));
+						t.start();
+						lastPlayerState = gameState.getOwnPlayer().getPlayerStatus();
+					}
 					vboxMenu.getChildren().add(statusCircle);
 				}
 				try {

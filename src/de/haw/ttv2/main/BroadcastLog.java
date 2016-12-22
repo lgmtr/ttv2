@@ -74,7 +74,8 @@ public class BroadcastLog {
 	
 	public Map<ID, List<BroadcastMsg>> getLogMap(){
 		Map<ID, List<BroadcastMsg>> logMap = new HashMap<>();
-		for (BroadcastMsg logListItem : messageLog) {
+		List<BroadcastMsg> messageLogCopy = new ArrayList<>(messageLog);
+		for (BroadcastMsg logListItem : messageLogCopy) {
 			if(logMap.containsKey(logListItem.getSource())) {
 				List<BroadcastMsg> bcmList = logMap.get(logListItem.getSource());
 				bcmList.add(logListItem);
@@ -117,10 +118,10 @@ public class BroadcastLog {
 	}
 
 	// Only for Tests
-	public String getLastBroadcast() {
+	public BroadcastMsg getLastBroadcast() {
 		if (messageLog.size() < 1)
 			return null;
-		return getBroadcastMsgFormatted(messageLog.get(messageLog.size() - 1));
+		return messageLog.get(messageLog.size() - 1);
 	}
 
 	// Only for Tests
