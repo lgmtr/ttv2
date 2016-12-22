@@ -210,8 +210,10 @@ public class MainGUI extends Application {
 		}), createButton("Join a Server", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				if(Integer.valueOf(tf_transactionID.getText()) == -666)
+				if(Integer.valueOf(tf_transactionID.getText()) == -666){
 					gameState.setCheatMode(true);
+					GUIMessageQueue.getInstance().addMessage("CheatMode activated!!!\n");
+				}
 				URL localURL = null;
 				try {
 					localURL = new URL(PROTOCOL + "://" + cb.getValue() + ":" + portTextField + "/");
