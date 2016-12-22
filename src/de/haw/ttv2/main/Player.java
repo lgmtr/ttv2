@@ -27,8 +27,8 @@ public class Player implements Comparable<Player> {
 		remainingShips = shipCount;
 		playerFields = calculatePlayerSectors(sectorCount, idRangeFrom, idRangeIdTo);
 	}
-	
-	public Player(ID playerID, int sectorCount, int shipCount, ID idRangeFrom, ID idRangeIdTo, boolean[] attackedFields, boolean[] shipInField){
+
+	public Player(ID playerID, int sectorCount, int shipCount, ID idRangeFrom, ID idRangeIdTo, boolean[] attackedFields, boolean[] shipInField) {
 		this.playerID = playerID;
 		this.attackedFields = attackedFields;
 		this.shipInField = shipInField;
@@ -139,7 +139,7 @@ public class Player implements Comparable<Player> {
 	public Boolean shipHitted(ID target) {
 		final int fieldID = shootInIntervalOfPlayer(target);
 		if (fieldID > -1)
-			if (shipInField[fieldID]){
+			if (shipInField[fieldID]) {
 				remainingShips--;
 				return true;
 			}
@@ -156,15 +156,15 @@ public class Player implements Comparable<Player> {
 			}
 		}
 	}
-	
-	public Sector findFreeSector(){
+
+	public Sector findFreeSector() {
 		boolean stop = false;
 		int sectorToShoot = -1;
-		do{
+		do {
 			sectorToShoot = GameState.randBetween(0, attackedFields.length);
-			if(!attackedFields[sectorToShoot])
+			if (!attackedFields[sectorToShoot])
 				stop = true;
-		}while(!stop);
+		} while (!stop);
 		return playerFields[sectorToShoot];
 	}
 
@@ -174,5 +174,33 @@ public class Player implements Comparable<Player> {
 
 	public boolean[] getShipInField() {
 		return shipInField;
+	}
+
+	public Boolean cheatedShipHitted(ID target) {
+		final int fieldID = shootInIntervalOfPlayer(target);
+		if (attackedFields[fieldID])
+			return false;
+		attackedFields[fieldID] = true;
+		final int freeFields = freeFields();
+		if (remainingShips == 1 && freeFields > 1)
+			return false;
+		if (remainingShips == 1 && freeFields == 0) {
+			remainingShips--;
+			return true;
+		}
+		boolean wasHit = GameState.randBetween(0, 100) > 90 ? true : false;
+		if(wasHit){
+			remainingShips--;
+			return true;
+		}
+		return false;
+	}
+
+	private int freeFields() {
+		int freeFields = 0;
+		for (int i = 0; i < attackedFields.length; i++)
+			if (!attackedFields[i])
+				freeFields++;
+		return freeFields;
 	}
 }
