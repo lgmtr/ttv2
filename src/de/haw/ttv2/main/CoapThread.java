@@ -37,7 +37,7 @@ public class CoapThread implements Runnable {
 				break;
 			}
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 

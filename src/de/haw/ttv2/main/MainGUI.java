@@ -57,6 +57,9 @@ public class MainGUI extends Application {
 	private static final double WINDOW_HEIGHT = 600;
 	private static final double RIGHT_WINDOW_SIZE = 200;
 
+	private static final double BUTTON_WIDTH = 190;
+	private static final double BUTTON_HEIGHT = 33;
+
 	private static final double FRAME_DURATION = 10;
 
 	private ChordImpl chordImpl;
@@ -81,8 +84,12 @@ public class MainGUI extends Application {
 	private Button startButton;
 
 	private TilePane tilePane;
-	
+
 	private PlayerStatusEnum lastPlayerState;
+
+	private Integer lastKnownTransactionID = -1;
+
+	private TextField tf_transactionID;
 
 	private void init(Stage primaryStage) {
 		lastPlayerState = PlayerStatusEnum.GREEN;
@@ -166,14 +173,14 @@ public class MainGUI extends Application {
 	}
 
 	private List<Node> createServerAndClientButtons() {
-		startButton = createButton("Start Game", 190, 40, new EventHandler<ActionEvent>() {
+		startButton = createButton("Start Game", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				gameState.startGame();
 				gameStarted = true;
 			}
 		});
-		return Arrays.asList(createButton("Create Server", 190, 40, new EventHandler<ActionEvent>() {
+		return Arrays.asList(createButton("Create Server", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				URL localURL = null;
@@ -196,7 +203,7 @@ public class MainGUI extends Application {
 					throw new RuntimeException("Could not create DHT!", error);
 				}
 			}
-		}), createButton("Join a Server", 190, 40, new EventHandler<ActionEvent>() {
+		}), createButton("Join a Server", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				URL localURL = null;
@@ -223,20 +230,20 @@ public class MainGUI extends Application {
 					throw new RuntimeException("Could not join DHT!", error);
 				}
 			}
-		}), createButton("Disconnect from Server", 190, 40, new EventHandler<ActionEvent>() {
+		}), createButton("Disconnect from Server", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				chordImpl.leave();
 				GUIMessageQueue.getInstance().addMessage("Disconnected\n");
 			}
-		}), createButton("Close Application", 190, 40, new EventHandler<ActionEvent>() {
+		}), createButton("Close Application", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				chordImpl.leave();
 				System.exit(0);
 				System.out.println("Application Closed");
 			}
-		}), createButton("Create Gamefield", 190, 40, new EventHandler<ActionEvent>() {
+		}), createButton("Create Gamefield", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				gameState.createGamefield();
@@ -262,7 +269,7 @@ public class MainGUI extends Application {
 				if (gameState.getOwnPlayer() != null) {
 					vboxMenu.getChildren().remove(statusCircle);
 					statusCircle = new Circle(70, gameState.getOwnPlayer().getPlayerStatus().getColor());
-					if(lastPlayerState.compareTo(gameState.getOwnPlayer().getPlayerStatus())!=0) {
+					if (lastPlayerState.compareTo(gameState.getOwnPlayer().getPlayerStatus()) != 0) {
 						Thread t = new Thread(new CoapThread(gameState.getOwnPlayer().getPlayerStatus()));
 						t.start();
 						lastPlayerState = gameState.getOwnPlayer().getPlayerStatus();
@@ -299,6 +306,12 @@ public class MainGUI extends Application {
 						tilePane.getChildren().add(createItem(id, 0, PlayerStatusEnum.GREEN.getColor()));
 					}
 				}
+				BroadcastMsg lastBroadcast = BroadcastLog.getInstance().getLastBroadcast();
+				if (lastBroadcast != null)
+					if (lastKnownTransactionID != lastBroadcast.getTransaction()){
+						lastKnownTransactionID = lastBroadcast.getTransaction();
+						tf_transactionID.setText(String.valueOf(lastKnownTransactionID));
+					}
 			}
 		}));
 		animation.setCycleCount(Animation.INDEFINITE);
@@ -348,16 +361,24 @@ public class MainGUI extends Application {
 			}
 		});
 		portTextField = "8585";
-		return Arrays.asList(ipText, portText);
+		Label transactionText = createTextField("Last known TransactionID:", String.valueOf(lastKnownTransactionID), null, tf_transactionID);
+		return Arrays.asList(ipText, portText, transactionText);
+	}
+
+	private Label createTextField(String labelText, String stdText, ChangeListener<String> changeListener, TextField reference) {
+		TextField text = new TextField(stdText);
+		text.setMinSize(190, 20);
+		if (changeListener != null)
+			text.textProperty().addListener(changeListener);
+		Label label = new Label(labelText, text);
+		label.setContentDisplay(ContentDisplay.BOTTOM);
+		if (reference != null)
+			reference = text;
+		return label;
 	}
 
 	private Label createTextField(String labelText, String stdText, ChangeListener<String> changeListener) {
-		TextField text = new TextField(stdText);
-		text.setMinSize(190, 20);
-		text.textProperty().addListener(changeListener);
-		Label label = new Label(labelText, text);
-		label.setContentDisplay(ContentDisplay.BOTTOM);
-		return label;
+		return createTextField(labelText, stdText, changeListener, null);
 	}
 
 	private ComboBox<String> createNIIAComboBox() {
