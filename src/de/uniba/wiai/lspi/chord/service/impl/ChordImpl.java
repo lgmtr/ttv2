@@ -1041,7 +1041,6 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 
 			Broadcast bc = new Broadcast(range, this.getID(), target, turn, hit);
 			this.asyncBroadcast(bc, node);
-
 		}
 	}
 

@@ -59,7 +59,7 @@ public class MainGUI extends Application {
 	private static final double BUTTON_WIDTH = 190;
 	private static final double BUTTON_HEIGHT = 33;
 
-	private static final double FRAME_DURATION = 10;
+	private static final double FRAME_DURATION = 25;
 
 	private ChordImpl chordImpl;
 	private GameState gameState;
@@ -281,12 +281,13 @@ public class MainGUI extends Application {
 
 			@Override
 			public void handle(ActionEvent arg0) {
+				final BroadcastLog bcLog = BroadcastLog.getInstance();
 				String message = GUIMessageQueue.getInstance().getFirstMessage();
 				if (message != null)
 					outputTextArea.appendText(message + "\n");
-				if (BroadcastLog.getInstance().getMessageWithDiffrentSrc() != null)
-					if (BroadcastLog.getInstance().getMessageWithDiffrentSrc().length() != 0)
-						System.out.println(BroadcastLog.getInstance().getMessageWithDiffrentSrc());
+				if (bcLog.getMessageWithDiffrentSrc() != null)
+					if (bcLog.getMessageWithDiffrentSrc().length() != 0)
+						System.out.println(bcLog.getMessageWithDiffrentSrc());
 				if (gameState.getOwnPlayer() != null) {
 					vboxMenu.getChildren().remove(statusCircle);
 					statusCircle = new Circle(70, gameState.getOwnPlayer().getPlayerStatus().getColor());
@@ -311,8 +312,8 @@ public class MainGUI extends Application {
 				} catch (NullPointerException e) {
 					// if catched, then game not started!
 				}
-				Map<ID, List<BroadcastMsg>> bclHittingMap = BroadcastLog.getInstance().getHittingMap();
-				Map<ID, List<BroadcastMsg>> bclMap = BroadcastLog.getInstance().getLogMap();
+				Map<ID, List<BroadcastMsg>> bclHittingMap = bcLog.getHittingMap();
+				Map<ID, List<BroadcastMsg>> bclMap = bcLog.getLogMap();
 				tilePane.getChildren().clear();
 				if (gameState.getOwnPlayer() != null)
 					tilePane.getChildren().add(
@@ -332,7 +333,7 @@ public class MainGUI extends Application {
 						tilePane.getChildren().add(createItem(id, 0, PlayerStatusEnum.GREEN.getColor(), -1));
 					}
 				}
-				BroadcastMsg lastBroadcast = BroadcastLog.getInstance().getLastBroadcast();
+				BroadcastMsg lastBroadcast = bcLog.getLastBroadcast();
 				if (lastBroadcast != null)
 					if (lastKnownTransactionID != lastBroadcast.getTransaction()) {
 						lastKnownTransactionID = lastBroadcast.getTransaction();
