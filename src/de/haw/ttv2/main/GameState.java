@@ -15,6 +15,12 @@ import de.uniba.wiai.lspi.chord.data.ID;
 import de.uniba.wiai.lspi.chord.service.NotifyCallback;
 import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 
+/**
+ * Contains the mechanics of the game, GameField, shoot and handle of hits
+ * 
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ */
 public class GameState implements NotifyCallback {
 
 	private ChordImpl chordImpl;
