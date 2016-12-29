@@ -129,8 +129,9 @@ public class GameState implements NotifyCallback {
 
 	public void broadcast(ID source, ID target, Boolean hit, Integer transaction) {
 		BroadcastLog.getInstance().addBroadcast(source, target, hit, transaction);
-		ID hasSomeLose = BroadcastLog.getInstance().hasSomeoneLost();
-		BroadcastMsg lastBroadcastFromLooser = BroadcastLog.getInstance().getLastBroadcast(hasSomeLose);
+		BroadcastLog bcLog = BroadcastLog.getInstance();
+		ID hasSomeLose = bcLog.hasSomeoneLost();
+		BroadcastMsg lastBroadcastFromLooser = bcLog.getLastBroadcast(hasSomeLose);
 		if (hasSomeLose != null && lastTarget.compareTo(lastBroadcastFromLooser.getTarget()) == 0) {
 			GUIMessageQueue.getInstance().addMessage(
 					WIN_LOSE_SEPERATOR + "Player with ID: " + hasSomeLose + " in Round: "
