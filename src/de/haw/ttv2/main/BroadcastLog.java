@@ -15,6 +15,10 @@ public class BroadcastLog {
 
 	private List<BroadcastMsg> messageLogOfHits;
 
+	private Map<ID, List<BroadcastMsg>> logMap;
+
+	private Map<ID, List<BroadcastMsg>> hittingMap;
+
 	private static final String WIN_LOSE_SEPERATOR = "\n==============================================================================\n";
 
 	public class BroadcastMsg {
@@ -56,46 +60,43 @@ public class BroadcastLog {
 			instance = new BroadcastLog();
 			instance.messageLog = new ArrayList<BroadcastMsg>();
 			instance.messageLogOfHits = new ArrayList<BroadcastMsg>();
+			instance.hittingMap = new HashMap<>();
+			instance.logMap = new HashMap<>();
 		}
 		return instance;
 	}
 
 	public void addBroadcast(ID source, ID target, Boolean hit, Integer transaction) {
-		messageLog.add(new BroadcastMsg(source, target, hit, transaction));
-		if (hit)
+		final BroadcastMsg bcm = new BroadcastMsg(source, target, hit, transaction);
+		messageLog.add(bcm);
+		if (logMap.containsKey(source)) {
+			List<BroadcastMsg> bcmList = logMap.get(source);
+			bcmList.add(bcm);
+			logMap.replace(source, bcmList);
+		} else {
+			List<BroadcastMsg> bcmList = new ArrayList<>();
+			bcmList.add(bcm);
+			logMap.put(source, bcmList);
+		}
+		if (hit){
 			messageLogOfHits.add(new BroadcastMsg(source, target, hit, transaction));
+			if (hittingMap.containsKey(source)) {
+				List<BroadcastMsg> bcmList = hittingMap.get(source);
+				bcmList.add(bcm);
+				hittingMap.replace(source, bcmList);
+			} else {
+				List<BroadcastMsg> bcmList = new ArrayList<>();
+				bcmList.add(bcm);
+				hittingMap.put(source, bcmList);
+			}
+		}
 	}
 
 	public Map<ID, List<BroadcastMsg>> getHittingMap() {
-		Map<ID, List<BroadcastMsg>> hittingMap = new HashMap<>();
-		for (BroadcastMsg hittingListItem : messageLogOfHits) {
-			if (hittingMap.containsKey(hittingListItem.getSource())) {
-				List<BroadcastMsg> bcmList = hittingMap.get(hittingListItem.getSource());
-				bcmList.add(hittingListItem);
-				hittingMap.replace(hittingListItem.getSource(), bcmList);
-			} else {
-				List<BroadcastMsg> bcmList = new ArrayList<>();
-				bcmList.add(hittingListItem);
-				hittingMap.put(hittingListItem.getSource(), bcmList);
-			}
-		}
 		return hittingMap;
 	}
 
 	public Map<ID, List<BroadcastMsg>> getLogMap() {
-		Map<ID, List<BroadcastMsg>> logMap = new HashMap<>();
-		List<BroadcastMsg> messageLogCopy = new ArrayList<>(messageLog);
-		for (BroadcastMsg logListItem : messageLogCopy) {
-			if (logMap.containsKey(logListItem.getSource())) {
-				List<BroadcastMsg> bcmList = logMap.get(logListItem.getSource());
-				bcmList.add(logListItem);
-				logMap.replace(logListItem.getSource(), bcmList);
-			} else {
-				List<BroadcastMsg> bcmList = new ArrayList<>();
-				bcmList.add(logListItem);
-				logMap.put(logListItem.getSource(), bcmList);
-			}
-		}
 		return logMap;
 	}
 
@@ -143,13 +144,9 @@ public class BroadcastLog {
 	}
 
 	public BroadcastMsg getLastBroadcast(ID hasSomeLose) {
-		List<BroadcastMsg> dummyList = new ArrayList<>();
-		for (BroadcastMsg broadcastMsg : messageLogOfHits) {
-			if (broadcastMsg.getSource().compareTo(hasSomeLose) == 0)
-				dummyList.add(broadcastMsg);
-		}
-		if (dummyList.size() > 0)
-			return dummyList.get(dummyList.size() - 1);
+		final List<BroadcastMsg> bcList = hittingMap.get(hasSomeLose);
+		if (bcList.size() > 0)
+			return bcList.get(bcList.size() - 1);
 		return null;
 	}
 

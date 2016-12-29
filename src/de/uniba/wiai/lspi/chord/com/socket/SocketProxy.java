@@ -1205,6 +1205,7 @@ public final class SocketProxy extends Proxy implements Runnable {
 		/* wait for response */
 		logger.debug("Waiting for response for request " + request);
 		Response response = this.waitForResponse(request);
+		System.out.println(response.getStatus());
 		logger.debug("Response " + response + " arrived.");
 		if (response.isFailureResponse()) {
 			throw new CommunicationException(response.getFailureReason());
