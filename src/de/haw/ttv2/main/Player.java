@@ -131,6 +131,9 @@ public class Player implements Comparable<Player> {
 		return playerID;
 	}
 
+	/*
+	 * Returns if the ship count is between two values
+	 */
 	private boolean shipCountBetween(int a, int b) {
 		if (a <= remainingShips && b > remainingShips)
 			return true;

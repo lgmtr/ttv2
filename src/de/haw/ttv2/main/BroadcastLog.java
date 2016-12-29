@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.haw.ttv2.main.BroadcastLog.BroadcastMsg;
 import de.uniba.wiai.lspi.chord.data.ID;
 
 public class BroadcastLog {
@@ -50,7 +51,7 @@ public class BroadcastLog {
 			this.transaction = transaction;
 		}
 	}
-	
+
 	public static synchronized BroadcastLog getInstance() {
 		if (instance == null) {
 			instance = new BroadcastLog();
@@ -75,7 +76,7 @@ public class BroadcastLog {
 	public Map<ID, List<BroadcastMsg>> getHittingMap(){
 		Map<ID, List<BroadcastMsg>> hittingMap = new HashMap<>();
 		for (BroadcastMsg hittingListItem : messageLogOfHits) {
-			if(hittingMap.containsKey(hittingListItem.getSource())) {
+			if (hittingMap.containsKey(hittingListItem.getSource())) {
 				List<BroadcastMsg> bcmList = hittingMap.get(hittingListItem.getSource());
 				bcmList.add(hittingListItem);
 				hittingMap.replace(hittingListItem.getSource(), bcmList);
@@ -95,7 +96,7 @@ public class BroadcastLog {
 		Map<ID, List<BroadcastMsg>> logMap = new HashMap<>();
 		List<BroadcastMsg> messageLogCopy = new ArrayList<>(messageLog);
 		for (BroadcastMsg logListItem : messageLogCopy) {
-			if(logMap.containsKey(logListItem.getSource())) {
+			if (logMap.containsKey(logListItem.getSource())) {
 				List<BroadcastMsg> bcmList = logMap.get(logListItem.getSource());
 				bcmList.add(logListItem);
 				logMap.replace(logListItem.getSource(), bcmList);
@@ -114,7 +115,7 @@ public class BroadcastLog {
 	public ID hasSomeoneLost(){
 		Map<ID, List<BroadcastMsg>> hittingMap = getHittingMap();
 		for (ID id : hittingMap.keySet()) {
-			if(hittingMap.get(id).size() >= GameState.SHIP_COUNT)
+			if (hittingMap.get(id).size() >= GameState.SHIP_COUNT)
 				return id;
 		}
 		return null;
@@ -150,8 +151,19 @@ public class BroadcastLog {
 	private String getBroadcastMsgFormatted(BroadcastMsg bc) {
 		if (messageLog.size() < 1)
 			return null;
-		return WIN_LOSE_SEPERATOR + "Source: " + bc.getSource().toString() + "\nTarget: " + bc.getTarget().toString() + "\nHit: " + bc.getHit().toString()
-				+ WIN_LOSE_SEPERATOR;
+		return WIN_LOSE_SEPERATOR + "Source: " + bc.getSource().toString() + "\nTarget: " + bc.getTarget().toString()
+				+ "\nHit: " + bc.getHit().toString() + WIN_LOSE_SEPERATOR;
+	}
+
+	public BroadcastMsg getLastBroadcast(ID hasSomeLose) {
+		List<BroadcastMsg> dummyList = new ArrayList<>();
+		for (BroadcastMsg broadcastMsg : messageLogOfHits) {
+			if (broadcastMsg.getSource().compareTo(hasSomeLose) == 0)
+				dummyList.add(broadcastMsg);
+		}
+		if (dummyList.size() > 0)
+			return dummyList.get(dummyList.size() - 1);
+		return null;
 	}
 
 }
