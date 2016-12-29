@@ -15,6 +15,8 @@ public class Player implements Comparable<Player> {
 	private boolean[] shipInField;
 
 	private int remainingShips;
+	
+	private int transactionIdOfHit = -1;
 
 	public Player(ID playerID, int sectorCount, int shipCount, ID idRangeFrom, ID idRangeIdTo) {
 		this.playerID = playerID;
@@ -136,11 +138,12 @@ public class Player implements Comparable<Player> {
 		return playerID.compareTo(otherPlayer.getPlayerID());
 	}
 
-	public Boolean shipHitted(ID target) {
+	public Boolean shipHitted(ID target, int actualTransactionID) {
 		final int fieldID = shootInIntervalOfPlayer(target);
 		if (fieldID > -1)
 			if (shipInField[fieldID]) {
 				remainingShips--;
+				transactionIdOfHit = actualTransactionID;
 				return true;
 			}
 		return false;
@@ -176,7 +179,7 @@ public class Player implements Comparable<Player> {
 		return shipInField;
 	}
 
-	public Boolean cheatedShipHitted(ID target) {
+	public Boolean cheatedShipHitted(ID target, int actualTransactionID) {
 		final int fieldID = shootInIntervalOfPlayer(target);
 		if (fieldID > -1) {
 			if (attackedFields[fieldID])
@@ -185,17 +188,23 @@ public class Player implements Comparable<Player> {
 			final int freeFields = freeFields();
 			if (remainingShips == freeFields) {
 				remainingShips--;
+				transactionIdOfHit = actualTransactionID;
 				return true;
 			}
 			boolean wasHit = GameState.randBetween(0, 100) > 95 ? true : false;
 			if (wasHit) {
 				remainingShips--;
+				transactionIdOfHit = actualTransactionID;
 				return true;
 			}
 		}
 		return false;
 	}
 
+	public int getTransactionIdOfHit() {
+		return transactionIdOfHit;
+	}
+	
 	private int freeFields() {
 		int freeFields = 0;
 		for (int i = 0; i < attackedFields.length; i++)

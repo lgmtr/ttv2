@@ -38,7 +38,6 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import de.haw.ttv2.main.BroadcastLog.BroadcastMsg;
@@ -137,33 +136,45 @@ public class MainGUI extends Application {
 		root.getChildren().add(borderPane);
 	}
 
-	private BorderPane createItem(ID player, double progress, Color color) {
+	private BorderPane createItem(ID player, double progress, Color color, int transactionID) {
 		BorderPane borderPane = new BorderPane();
 		VBox rightBox = new VBox(5);
-		rightBox.setMinWidth(70);
-		rightBox.setMinHeight(100);
-		rightBox.setMaxWidth(70);
-		rightBox.setMaxHeight(100);
-		rightBox.getChildren().add(new Circle(30, color));
+		rightBox.setMinWidth(120);
+		rightBox.setMinHeight(130);
+		rightBox.setMaxWidth(120);
+		rightBox.setMaxHeight(130);
+		rightBox.getChildren().add(new Circle(50, color));
 		rightBox.setAlignment(Pos.CENTER);
 		borderPane.setRight(rightBox);
 		VBox centerBox = new VBox(5);
-		centerBox.setMinWidth(350);
-		centerBox.setMinHeight(100);
-		centerBox.setMaxWidth(350);
-		centerBox.setMaxHeight(100);
-		Text idText = new Text(player.toString());
+		centerBox.setMinWidth(370);
+		centerBox.setMinHeight(130);
+		centerBox.setMaxWidth(370);
+		centerBox.setMaxHeight(130);
+		centerBox.setAlignment(Pos.CENTER);
+		TextField idText = new TextField(player.toString());
+		idText.setMinSize(360, 20);
+		idText.setAlignment(Pos.CENTER);
+		idText.setDisable(true);
 		Label idLabel = new Label("Player ID", idText);
 		idLabel.setContentDisplay(ContentDisplay.BOTTOM);
 		centerBox.getChildren().add(idLabel);
 		ProgressBar playerProgress = new ProgressBar();
 		playerProgress.setProgress(progress);
-		playerProgress.setMinWidth(340);
+		playerProgress.setMinWidth(360);
 		Label prLabel = new Label("Player hitted ships", playerProgress);
 		prLabel.setContentDisplay(ContentDisplay.BOTTOM);
 		centerBox.getChildren().add(prLabel);
+		TextField taText = new TextField(String.valueOf(transactionID));
+		taText.setMinSize(40, 20);
+		taText.setMaxSize(40, 20);
+		taText.setDisable(true);
+		Label taLabel = new Label("TransactionID of last Hit: ", taText);
+		taLabel.setContentDisplay(ContentDisplay.RIGHT);
+		centerBox.getChildren().add(taLabel);
 		borderPane.setCenter(centerBox);
-		borderPane.setBorder(new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(15), BorderStroke.THIN)));
+		borderPane.setBorder(new Border(new BorderStroke(Color.DARKGRAY, BorderStrokeStyle.SOLID, new CornerRadii(15),
+				BorderStroke.THIN)));
 		return borderPane;
 	}
 
@@ -180,83 +191,85 @@ public class MainGUI extends Application {
 				gameStarted = true;
 			}
 		});
-		return Arrays.asList(createButton("Create Server", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				if(Integer.valueOf(tf_transactionID.getText()) == -666){
-					gameState.setCheatMode(true);
-					GUIMessageQueue.getInstance().addMessage("CheatMode activated!!!\n");
-				}
-				URL localURL = null;
-				try {
-					localURL = new URL(PROTOCOL + "://" + cb.getValue() + ":" + portTextField + "/");
-				} catch (MalformedURLException error) {
-					throw new RuntimeException(error);
-				}
+		return Arrays.asList(
+				createButton("Create Server", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent e) {
+						if (Integer.valueOf(tf_transactionID.getText()) == -666) {
+							gameState.setCheatMode(true);
+							GUIMessageQueue.getInstance().addMessage("CheatMode activated!!!\n");
+						}
+						URL localURL = null;
+						try {
+							localURL = new URL(PROTOCOL + "://" + cb.getValue() + ":" + portTextField + "/");
+						} catch (MalformedURLException error) {
+							throw new RuntimeException(error);
+						}
 
-				try {
-					if (cb.getValue() != null) {
-						if (!cb.getValue().isEmpty()) {
-							chordImpl.create(localURL);
-							GUIMessageQueue.getInstance().addMessage("Chord listens on: " + localURL + "\n");
-							Thread thread = new Thread(new JoiningThread(chordImpl));
-							thread.start();
+						try {
+							if (cb.getValue() != null) {
+								if (!cb.getValue().isEmpty()) {
+									chordImpl.create(localURL);
+									GUIMessageQueue.getInstance().addMessage("Chord listens on: " + localURL + "\n");
+									Thread thread = new Thread(new JoiningThread(chordImpl));
+									thread.start();
+								}
+							}
+						} catch (ServiceException error) {
+							throw new RuntimeException("Could not create DHT!", error);
 						}
 					}
-				} catch (ServiceException error) {
-					throw new RuntimeException("Could not create DHT!", error);
-				}
-			}
-		}), createButton("Join a Server", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				if(Integer.valueOf(tf_transactionID.getText()) == -666){
-					gameState.setCheatMode(true);
-					GUIMessageQueue.getInstance().addMessage("CheatMode activated!!!\n");
-				}
-				URL localURL = null;
-				try {
-					localURL = new URL(PROTOCOL + "://" + cb.getValue() + ":" + portTextField + "/");
-				} catch (MalformedURLException error) {
-					throw new RuntimeException(error);
-				}
+				}), createButton("Join a Server", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent e) {
+						if (Integer.valueOf(tf_transactionID.getText()) == -666) {
+							gameState.setCheatMode(true);
+							GUIMessageQueue.getInstance().addMessage("CheatMode activated!!!\n");
+						}
+						URL localURL = null;
+						try {
+							localURL = new URL(PROTOCOL + "://" + cb.getValue() + ":" + portTextField + "/");
+						} catch (MalformedURLException error) {
+							throw new RuntimeException(error);
+						}
 
-				URL serverURL = null;
-				try {
-					serverURL = new URL(PROTOCOL + "://" + ipTextField + ":" + portTextField + "/");
-				} catch (MalformedURLException error) {
-					throw new RuntimeException(error);
-				}
-				try {
-					if (cb.getValue() != null && ipTextField != null) {
-						if (!cb.getValue().isEmpty() && !ipTextField.isEmpty()) {
-							chordImpl.join(localURL, serverURL);
-							GUIMessageQueue.getInstance().addMessage("Joined Server: " + serverURL + "\n");
+						URL serverURL = null;
+						try {
+							serverURL = new URL(PROTOCOL + "://" + ipTextField + ":" + portTextField + "/");
+						} catch (MalformedURLException error) {
+							throw new RuntimeException(error);
+						}
+						try {
+							if (cb.getValue() != null && ipTextField != null) {
+								if (!cb.getValue().isEmpty() && !ipTextField.isEmpty()) {
+									chordImpl.join(localURL, serverURL);
+									GUIMessageQueue.getInstance().addMessage("Joined Server: " + serverURL + "\n");
+								}
+							}
+						} catch (ServiceException error) {
+							throw new RuntimeException("Could not join DHT!", error);
 						}
 					}
-				} catch (ServiceException error) {
-					throw new RuntimeException("Could not join DHT!", error);
-				}
-			}
-		}), createButton("Disconnect from Server", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				chordImpl.leave();
-				GUIMessageQueue.getInstance().addMessage("Disconnected\n");
-			}
-		}), createButton("Close Application", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				chordImpl.leave();
-				System.exit(0);
-				System.out.println("Application Closed");
-			}
-		}), createButton("Create Gamefield", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				gameState.createGamefield();
-			}
-		}), startButton);
+				}),
+				createButton("Disconnect from Server", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent e) {
+						chordImpl.leave();
+						GUIMessageQueue.getInstance().addMessage("Disconnected\n");
+					}
+				}), createButton("Close Application", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent e) {
+						chordImpl.leave();
+						System.exit(0);
+						System.out.println("Application Closed");
+					}
+				}), createButton("Create Gamefield", BUTTON_WIDTH, BUTTON_HEIGHT, new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent e) {
+						gameState.createGamefield();
+					}
+				}), startButton);
 	}
 
 	@Override
@@ -303,15 +316,20 @@ public class MainGUI extends Application {
 				tilePane.getChildren().clear();
 				if (gameState.getOwnPlayer() != null)
 					tilePane.getChildren().add(
-							createItem(chordImpl.getID(), ((double) GameState.SHIP_COUNT - (double) gameState.getOwnPlayer().getRemainingShips())
-									* ((double) GameState.SHIP_COUNT / 100d), gameState.getOwnPlayer().getPlayerStatus().getColor()));
+							createItem(chordImpl.getID(), ((double) GameState.SHIP_COUNT - (double) gameState
+									.getOwnPlayer().getRemainingShips()) * ((double) GameState.SHIP_COUNT / 100d),
+									gameState.getOwnPlayer().getPlayerStatus().getColor(), gameState.getOwnPlayer()
+											.getTransactionIdOfHit()));
 				for (ID id : bclMap.keySet()) {
 					if (bclHittingMap.get(id) != null) {
-						tilePane.getChildren().add(
-								createItem(id, (double) bclHittingMap.get(id).size() * ((double) GameState.SHIP_COUNT / 100d),
-										getPlayerStatus(GameState.SHIP_COUNT - bclHittingMap.get(id).size()).getColor()));
+						tilePane.getChildren()
+								.add(createItem(
+										id,
+										(double) bclHittingMap.get(id).size() * ((double) GameState.SHIP_COUNT / 100d),
+										getPlayerStatus(GameState.SHIP_COUNT - bclHittingMap.get(id).size()).getColor(),
+										bclHittingMap.get(id).get(bclHittingMap.get(id).size() - 1).getTransaction()));
 					} else {
-						tilePane.getChildren().add(createItem(id, 0, PlayerStatusEnum.GREEN.getColor()));
+						tilePane.getChildren().add(createItem(id, 0, PlayerStatusEnum.GREEN.getColor(), -1));
 					}
 				}
 				BroadcastMsg lastBroadcast = BroadcastLog.getInstance().getLastBroadcast();
@@ -377,7 +395,8 @@ public class MainGUI extends Application {
 		return Arrays.asList(ipText, portText, label);
 	}
 
-	private Label createTextField(String labelText, String stdText, ChangeListener<String> changeListener, TextField reference) {
+	private Label createTextField(String labelText, String stdText, ChangeListener<String> changeListener,
+			TextField reference) {
 		TextField text = new TextField(stdText);
 		text.setMinSize(190, 20);
 		if (changeListener != null)
