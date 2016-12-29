@@ -22,7 +22,7 @@ public class GameState implements NotifyCallback {
 	public static final ID MAXID = ID.valueOf(((BigInteger.valueOf(2).pow(160)).subtract(BigInteger.valueOf(1))));
 
 	private static final String WIN_LOSE_SEPERATOR = "\n==============================================================================\n";
-	
+
 	private static final String MOD_WIN_LOSE_SEPERATOR = "==============================================================================\n";
 
 	public static final int SECTOR_COUNT = 100;
@@ -36,9 +36,9 @@ public class GameState implements NotifyCallback {
 	private boolean someoneLose = false;
 
 	private ID lastTarget;
-	
+
 	private boolean cheatMode = false;
-	
+
 	public GameState(ChordImpl chordImpl) {
 		this.chordImpl = chordImpl;
 	}
@@ -54,10 +54,11 @@ public class GameState implements NotifyCallback {
 		for (int i = 0; i < playerIDList.size(); i++) {
 			Player newPlayer;
 			if (i == 0)
-				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, GameState.SHIP_COUNT, playerIDList.get(playerIDList.size() - 1),
-						playerIDList.get(i));
+				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, GameState.SHIP_COUNT,
+						playerIDList.get(playerIDList.size() - 1), playerIDList.get(i));
 			else
-				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, GameState.SHIP_COUNT, playerIDList.get(i - 1), playerIDList.get(i));
+				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, GameState.SHIP_COUNT,
+						playerIDList.get(i - 1), playerIDList.get(i));
 			if (newPlayer.getPlayerID().equals(ownID))
 				ownPlayer = newPlayer;
 			playerList.add(newPlayer);
@@ -76,16 +77,19 @@ public class GameState implements NotifyCallback {
 		for (int i = 0; i < playerIDList.size(); i++) {
 			Player newPlayer;
 			if (playerIDList.get(i).compareTo(chordImpl.getID()) == 0) {
-				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, ownPlayer.getRemainingShips(), i == 0 ? playerIDList.get(playerIDList
-						.size() - 1) : playerIDList.get(i - 1), playerIDList.get(i), ownPlayer.getAttackedFields(), ownPlayer.getShipInField());
+				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, ownPlayer.getRemainingShips(),
+						i == 0 ? playerIDList.get(playerIDList.size() - 1) : playerIDList.get(i - 1),
+						playerIDList.get(i), ownPlayer.getAttackedFields(), ownPlayer.getShipInField());
 				ownPlayer = newPlayer;
 			} else if (containsInOldList(playerIDList.get(i)) >= 0) {
 				Player dummyPlayer = playerList.get(containsInOldList(playerIDList.get(i)));
-				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, dummyPlayer.getRemainingShips(), i == 0 ? playerIDList.get(playerIDList
-						.size() - 1) : playerIDList.get(i - 1), playerIDList.get(i), dummyPlayer.getAttackedFields(), dummyPlayer.getShipInField());
+				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, dummyPlayer.getRemainingShips(),
+						i == 0 ? playerIDList.get(playerIDList.size() - 1) : playerIDList.get(i - 1),
+						playerIDList.get(i), dummyPlayer.getAttackedFields(), dummyPlayer.getShipInField());
 			} else {
-				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, GameState.SHIP_COUNT, i == 0 ? playerIDList.get(playerIDList.size() - 1)
-						: playerIDList.get(i - 1), playerIDList.get(i));
+				newPlayer = new Player(playerIDList.get(i), GameState.SECTOR_COUNT, GameState.SHIP_COUNT,
+						i == 0 ? playerIDList.get(playerIDList.size() - 1) : playerIDList.get(i - 1),
+						playerIDList.get(i));
 			}
 			newPlayerList.add(newPlayer);
 		}
@@ -112,24 +116,25 @@ public class GameState implements NotifyCallback {
 		if (ownPlayer.getRemainingShips() > 0) {
 			shoot();
 		} else {
-			GUIMessageQueue.getInstance().addMessage(WIN_LOSE_SEPERATOR + "I lose!!! Game Over!!!" + WIN_LOSE_SEPERATOR);
+			GUIMessageQueue.getInstance()
+					.addMessage(WIN_LOSE_SEPERATOR + "I lose!!! Game Over!!!" + WIN_LOSE_SEPERATOR);
 		}
 	}
 
 	private Boolean handleHit(ID target, int actualTransactionID) {
-		if(cheatMode)
+		if (cheatMode)
 			return ownPlayer.cheatedShipHitted(target, actualTransactionID);
 		return ownPlayer.shipHitted(target, actualTransactionID);
 	}
 
-	// @Override
 	public void broadcast(ID source, ID target, Boolean hit, Integer transaction) {
 		BroadcastLog.getInstance().addBroadcast(source, target, hit, transaction);
 		ID hasSomeLose = BroadcastLog.getInstance().hasSomeoneLost();
 		BroadcastMsg lastBroadcastFromLooser = BroadcastLog.getInstance().getLastBroadcast(hasSomeLose);
 		if (hasSomeLose != null && lastTarget.compareTo(lastBroadcastFromLooser.getTarget()) == 0) {
 			GUIMessageQueue.getInstance().addMessage(
-					WIN_LOSE_SEPERATOR + "Player with ID: " + hasSomeLose + " in Round: " + lastBroadcastFromLooser.getTransaction() + " lost!!!");
+					WIN_LOSE_SEPERATOR + "Player with ID: " + hasSomeLose + " in Round: "
+							+ lastBroadcastFromLooser.getTransaction() + " lost!!!");
 			GUIMessageQueue.getInstance().addMessage("Last shot was from me!!!");
 			someoneLose = true;
 			GUIMessageQueue.getInstance().addMessage(MOD_WIN_LOSE_SEPERATOR);
