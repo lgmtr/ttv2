@@ -486,11 +486,15 @@ public final class NodeImpl extends Node {
     	this.logger.info("Attempting asynchronous re-broadcast!");
         this.asyncExecutor.execute(new Runnable() {
             public void run() {
-                try {
-                    n.broadcast(bc);
-                } catch (Throwable th) {
-                    th.printStackTrace();
-                }
+            	boolean broadcastSuccsesful = false;
+				do {
+					try {
+						n.broadcast(bc);
+						broadcastSuccsesful = true;
+					} catch (Throwable th) {
+						broadcastSuccsesful = false;
+					}
+				} while (!broadcastSuccsesful);
             }
         });
     }
