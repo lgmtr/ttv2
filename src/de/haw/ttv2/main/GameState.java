@@ -38,7 +38,7 @@ public class GameState implements NotifyCallback {
 	private ID lastTarget;
 	
 	private boolean cheatMode = false;
-
+	
 	public GameState(ChordImpl chordImpl) {
 		this.chordImpl = chordImpl;
 	}
@@ -104,7 +104,7 @@ public class GameState implements NotifyCallback {
 
 	@Override
 	public void retrieved(ID target) {
-		final Boolean handleHit = handleHit(target);
+		final Boolean handleHit = handleHit(target, chordImpl.getLastReceivedTransactionID() + 1);
 		chordImpl.broadcast(target, handleHit);
 		if (handleHit) {
 			GUIMessageQueue.getInstance().addMessage("The Shoot on the ID: " + target + " was a hit!");
@@ -116,10 +116,10 @@ public class GameState implements NotifyCallback {
 		}
 	}
 
-	private Boolean handleHit(ID target) {
+	private Boolean handleHit(ID target, int actualTransactionID) {
 		if(cheatMode)
-			return ownPlayer.cheatedShipHitted(target);
-		return ownPlayer.shipHitted(target);
+			return ownPlayer.cheatedShipHitted(target, actualTransactionID);
+		return ownPlayer.shipHitted(target, actualTransactionID);
 	}
 
 	// @Override
