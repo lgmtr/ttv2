@@ -31,6 +31,9 @@ public class JoiningThread implements Runnable{
 		
 	}
 	
+	/*
+	 * Put the Thread to sleep for a specified amount of time
+	 */
 	private void waitTime(int time) {
 		try {
 			Thread.sleep(time);

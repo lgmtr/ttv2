@@ -60,12 +60,18 @@ public class BroadcastLog {
 		return instance;
 	}
 
+	/*
+	 * Adds a new BroadcastMsg to the messageLog
+	 */
 	public void addBroadcast(ID source, ID target, Boolean hit, Integer transaction) {
 		messageLog.add(new BroadcastMsg(source, target, hit, transaction));
 		if (hit)
 			messageLogOfHits.add(new BroadcastMsg(source, target, hit, transaction));
 	}
 	
+	/*
+	 * Returns a map of a List of Broadcast Messages with hit = true
+	 */
 	public Map<ID, List<BroadcastMsg>> getHittingMap(){
 		Map<ID, List<BroadcastMsg>> hittingMap = new HashMap<>();
 		for (BroadcastMsg hittingListItem : messageLogOfHits) {
@@ -82,6 +88,9 @@ public class BroadcastLog {
 		return hittingMap;
 	}
 	
+	/*
+	 * Returns a map of a List of Broadcast Messages
+	 */
 	public Map<ID, List<BroadcastMsg>> getLogMap(){
 		Map<ID, List<BroadcastMsg>> logMap = new HashMap<>();
 		List<BroadcastMsg> messageLogCopy = new ArrayList<>(messageLog);
@@ -99,6 +108,9 @@ public class BroadcastLog {
 		return logMap;
 	}
 	
+	/*
+	 * Checks if someone has lost his last ship
+	 */
 	public ID hasSomeoneLost(){
 		Map<ID, List<BroadcastMsg>> hittingMap = getHittingMap();
 		for (ID id : hittingMap.keySet()) {
