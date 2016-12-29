@@ -6,6 +6,12 @@ import java.net.URISyntaxException;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
+/**
+ * 
+ * 
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ */
 public class CoapThread implements Runnable {
 
 	private PlayerStatusEnum coapCommand;

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.haw.ttv2.main.BroadcastLog.BroadcastMsg;
 import de.uniba.wiai.lspi.chord.data.ID;
 
 public class BroadcastLog {
