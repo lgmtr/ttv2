@@ -449,7 +449,7 @@ public final class NodeImpl extends Node {
                 ID newRange = null;
                 // if there is entries left after node
                 if (i < fingerTable.size() - 1) {
-                    //potentielle neue range ist die nächste node im table
+                    //potential new range is the next node in table
                     ID potentialNext = fingerTable.get(i + 1).getNodeID();
                     if(potentialNext.isInInterval(entryID, range) || potentialNext.equals(range)){
                         newRange = potentialNext;
@@ -482,19 +482,20 @@ public final class NodeImpl extends Node {
 
     }
 
+	// Starts Async-Broadcast in new Thread, send broadcast until successful
     public void asyncBroadcast(final Broadcast bc, final Node n) {
     	this.logger.info("Attempting asynchronous re-broadcast!");
         this.asyncExecutor.execute(new Runnable() {
             public void run() {
-            	boolean broadcastSuccsesful = false;
+            	boolean broadcastSuccesful = false;
 				do {
 					try {
 						n.broadcast(bc);
-						broadcastSuccsesful = true;
+						broadcastSuccesful = true;
 					} catch (Throwable th) {
-						broadcastSuccsesful = false;
+						broadcastSuccesful = false;
 					}
-				} while (!broadcastSuccsesful);
+				} while (!broadcastSuccesful);
             }
         });
     }
