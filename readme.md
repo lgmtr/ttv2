@@ -9,4 +9,6 @@ Abschliessend wurde die Kommunikation mit einem CoAP-Interface implementiert und
 
 Um das Spielergebnis zu manipulieren wurde ein CheatMode eingebaut, wie dieser aktiviert werden kann ist in einem der Kommentare versteckt! 
 
+Unsere Taktik beim Spielen desteht darin, dass wir immer auf den Spieler mit den wenigsten verbleibenden Schiffen feuern. Sollte noch kein Spieler ein Schiff verloren haben, wird den Spieler in der Liste geschossen, welcher die niedrigste Chord-ID bekommen hat, sollte dies unsere ID sein, wird auf den nachfolgenden Spieler geschossen.  
+
 <b>Hinweis: Das Repository muss als Maven-Paket importiert werden!</b>
