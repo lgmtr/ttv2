@@ -38,6 +38,9 @@ public class Player implements Comparable<Player> {
 		playerFields = calculatePlayerSectors(sectorCount, idRangeFrom, idRangeIdTo);
 	}
 
+	/*
+	 * Calculates the sectors of the Player
+	 */
 	private Sector[] calculatePlayerSectors(int sectorCount, ID idRangeFrom, ID idRangeIdTo) {
 		Sector[] playerFields = new Sector[sectorCount];
 		// Vorgänger hat die größere ID
@@ -84,6 +87,9 @@ public class Player implements Comparable<Player> {
 		return playerFields;
 	}
 
+	/*
+	 * Returns the status of the player to switch his color
+	 */
 	public PlayerStatusEnum getPlayerStatus() {
 		if (GameState.SHIP_COUNT == remainingShips) {
 			return PlayerStatusEnum.GREEN;
@@ -95,6 +101,9 @@ public class Player implements Comparable<Player> {
 			return PlayerStatusEnum.RED;
 	}
 
+	/*
+	 * Sets the ships for the player random on his field
+	 */
 	public void setShips() {
 		for (int i = 0; i < GameState.SHIP_COUNT; i++) {
 			boolean shipSet = false;
@@ -108,14 +117,23 @@ public class Player implements Comparable<Player> {
 		}
 	}
 
+	/*
+	 * Returns the count of the remaining ships of the player
+	 */
 	public int getRemainingShips() {
 		return remainingShips;
 	}
 
+	/*
+	 * Returns the ID of the player
+	 */
 	public ID getPlayerID() {
 		return playerID;
 	}
 
+	/*
+	 * Returns if the ship count is between two values
+	 */
 	private boolean shipCountBetween(int a, int b) {
 		if (a <= remainingShips && b > remainingShips)
 			return true;

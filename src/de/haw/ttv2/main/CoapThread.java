@@ -6,6 +6,12 @@ import java.net.URISyntaxException;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
+/**
+ * This Class runs a Thread to send coap messages to switch the color of an LED or a dummy application on localhost
+ * 
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ */
 public class CoapThread implements Runnable {
 
 	private PlayerStatusEnum coapCommand;

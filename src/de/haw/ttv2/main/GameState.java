@@ -15,6 +15,12 @@ import de.uniba.wiai.lspi.chord.data.ID;
 import de.uniba.wiai.lspi.chord.service.NotifyCallback;
 import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 
+/**
+ * Contains the mechanics of the game, GameField, shoot and handle of hits
+ * 
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ */
 public class GameState implements NotifyCallback {
 
 	private ChordImpl chordImpl;
@@ -43,6 +49,9 @@ public class GameState implements NotifyCallback {
 		this.chordImpl = chordImpl;
 	}
 
+	/*
+	 * Creates a GameField for a player
+	 */
 	public void createGameField(ID ownID) {
 		Set<Node> fingerSet = new HashSet<>(chordImpl.getFingerTable());
 		List<ID> playerIDList = new ArrayList<>();
@@ -65,6 +74,9 @@ public class GameState implements NotifyCallback {
 		}
 	}
 
+	/*
+	 * Recalculates the GameField if a new or unknown player joins the game
+	 */
 	private void recalculateGameField(ID newID) {
 		Set<Node> fingerSet = new HashSet<>(chordImpl.getFingerTable());
 		List<ID> playerIDList = new ArrayList<>();
@@ -106,6 +118,12 @@ public class GameState implements NotifyCallback {
 		return -1;
 	}
 
+	/*
+	 * Handles a retrieved hit on the player
+	 * 
+	 * (non-Javadoc)
+	 * @see de.uniba.wiai.lspi.chord.service.NotifyCallback#retrieved(de.uniba.wiai.lspi.chord.data.ID)
+	 */
 	@Override
 	public void retrieved(ID target) {
 		final Boolean handleHit = handleHit(target, chordImpl.getLastReceivedTransactionID() + 1);
@@ -121,12 +139,23 @@ public class GameState implements NotifyCallback {
 		}
 	}
 
+	/*
+	 * Returns if a ship was hit
+	 */
 	private Boolean handleHit(ID target, int actualTransactionID) {
 		if (cheatMode)
 			return ownPlayer.cheatedShipHitted(target, actualTransactionID);
 		return ownPlayer.shipHitted(target, actualTransactionID);
 	}
 
+	/**
+	 * Handles an incoming broadcast, checks if a player has lost and recalculates the gamefield if an unknown player joins the game
+	 * 
+	 * @param source
+	 * @param target
+	 * @param hit
+	 * @param transaction
+	 */
 	public void broadcast(ID source, ID target, Boolean hit, Integer transaction) {
 		BroadcastLog.getInstance().addBroadcast(source, target, hit, transaction);
 		BroadcastLog bcLog = BroadcastLog.getInstance();
@@ -162,11 +191,20 @@ public class GameState implements NotifyCallback {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see de.uniba.wiai.lspi.chord.service.NotifyCallback#broadcast(de.uniba.wiai.lspi.chord.com.Broadcast)
+	 */
 	@Override
 	public void broadcast(Broadcast bc) {
 		broadcast(bc.getSource(), bc.getTarget(), bc.getHit(), bc.getTransaction());
 	}
 
+	/**
+	 * @param source
+	 * @param target
+	 * @param hit
+	 * @param shootedPlayer
+	 */
 	private void handleShoot(ID source, ID target, Boolean hit, Player shootedPlayer) {
 		int hittedSector = shootedPlayer.shootInIntervalOfPlayer(target);
 		shootedPlayer.setHittedSector(hittedSector, hit);
@@ -179,6 +217,9 @@ public class GameState implements NotifyCallback {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void startGame() {
 		if (chordImpl.getPredecessorID().compareTo(chordImpl.getID()) > 0) {
 			GUIMessageQueue.getInstance().addMessage("I Start!");
@@ -186,6 +227,9 @@ public class GameState implements NotifyCallback {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	private void shoot() {
 		if (playerList.size() > 0) {
 			if (!someoneLose) {
@@ -205,11 +249,19 @@ public class GameState implements NotifyCallback {
 		}
 	}
 
+	/**
+	 * @param min
+	 * @param max
+	 * @return
+	 */
 	protected static int randBetween(int min, int max) {
 		Random rand = new Random();
 		return rand.nextInt(max - (min + 1)) + min;
 	}
 
+	/**
+	 * 
+	 */
 	public void createGamefield() {
 		if (playerList == null)
 			playerList = new ArrayList<>();

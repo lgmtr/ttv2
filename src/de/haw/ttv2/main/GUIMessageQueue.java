@@ -17,6 +17,9 @@ public class GUIMessageQueue {
 		return instance;
 	}
 
+	/*
+	 * Returns the first Message in the queue
+	 */
 	public String getFirstMessage() {
 		String returnString = null;
 		if (message.size() > 0) {
@@ -26,6 +29,9 @@ public class GUIMessageQueue {
 		return returnString;
 	}
 	
+	/*
+	 * Adds a message to the queue
+	 */
 	public void addMessage(String message) {
 		this.message.add(this.message.size(), message);
 	}

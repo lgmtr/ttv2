@@ -66,6 +66,9 @@ public class BroadcastLog {
 		return instance;
 	}
 
+	/*
+	 * Adds a new BroadcastMsg to the messageLog
+	 */
 	public void addBroadcast(ID source, ID target, Boolean hit, Integer transaction) {
 		final BroadcastMsg bcm = new BroadcastMsg(source, target, hit, transaction);
 		messageLog.add(bcm);
@@ -95,12 +98,18 @@ public class BroadcastLog {
 	public Map<ID, List<BroadcastMsg>> getHittingMap() {
 		return hittingMap;
 	}
-
-	public Map<ID, List<BroadcastMsg>> getLogMap() {
+	
+	/*
+	 * Returns a map of a List of Broadcast Messages
+	 */
+	public Map<ID, List<BroadcastMsg>> getLogMap(){
 		return logMap;
 	}
-
-	public ID hasSomeoneLost() {
+	
+	/*
+	 * Checks if someone has lost his last ship
+	 */
+	public ID hasSomeoneLost(){
 		Map<ID, List<BroadcastMsg>> hittingMap = getHittingMap();
 		for (ID id : hittingMap.keySet()) {
 			if (hittingMap.get(id).size() >= GameState.SHIP_COUNT)
