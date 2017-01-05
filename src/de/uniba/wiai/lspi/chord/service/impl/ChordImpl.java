@@ -1117,19 +1117,20 @@ public final class ChordImpl implements Chord, Report, AsynChord {
 		return url;
 	}
 
+	// Starts Async-Broadcast in new Thread, send broadcast until successful
 	public void asyncBroadcast(final Broadcast bc, final Node n) {
 		this.logger.info("Attempting asynchronous initial broadcast!");
 		this.asyncExecutor.execute(new Runnable() {
 			public void run() {
-				boolean broadcastSuccsesful = false;
+				boolean broadcastSuccesful = false;
 				do {
 					try {
 						n.broadcast(bc);
-						broadcastSuccsesful = true;
+						broadcastSuccesful = true;
 					} catch (Throwable th) {
-						broadcastSuccsesful = false;
+						broadcastSuccesful = false;
 					}
-				} while (!broadcastSuccsesful);
+				} while (!broadcastSuccesful);
 			}
 		});
 	}

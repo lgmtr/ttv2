@@ -54,7 +54,7 @@ public class Player implements Comparable<Player> {
 	 */
 	private Sector[] calculatePlayerSectors(int sectorCount, ID idRangeFrom, ID idRangeIdTo) {
 		Sector[] playerFields = new Sector[sectorCount];
-		// Vorgänger hat die größere ID
+		// Predecessor have a bigger ID
 		if (idRangeFrom.compareTo(idRangeIdTo) == 1) {
 			final BigInteger fromBIID = idRangeFrom.toBigInteger().add(BigInteger.ONE);
 			final BigInteger toBIID = idRangeIdTo.toBigInteger();
@@ -78,7 +78,7 @@ public class Player implements Comparable<Player> {
 				}
 
 			}
-			// Vorgänger hat die kleinere ID
+			// Successor have a smaller ID
 		} else if (idRangeFrom.compareTo(idRangeIdTo) == -1) {
 			final BigInteger fromBIID = idRangeFrom.toBigInteger().add(BigInteger.ONE);
 			final BigInteger toBIID = idRangeIdTo.toBigInteger();
