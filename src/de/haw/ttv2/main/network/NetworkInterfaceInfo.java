@@ -9,6 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Returns all NetworkInterface-Models
+ * 
+ * @source http://docs.oracle.com/javase/tutorial/networking/nifs/listing.html
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ */
 public class NetworkInterfaceInfo {
 
 	public static Map<String, NetworkInterfaceModell> getNetworkInterfacesWithInetAddresses() {

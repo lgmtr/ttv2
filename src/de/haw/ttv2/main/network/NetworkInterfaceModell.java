@@ -9,6 +9,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Creates NetworkInterfaceModell with given interface name, interface display
+ * name and a list of interface addresses. The List contains only IPv4 Addresses
+ * without localhost.
+ * 
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ */
 public class NetworkInterfaceModell {
 
 	private String networkInterfaceName;
@@ -19,13 +27,15 @@ public class NetworkInterfaceModell {
 
 	public static final String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
 
-	public NetworkInterfaceModell(String networkInterfaceName, String networkInterfaceDisplayName, List<String> networkInterfaceInetAddresses) {
+	public NetworkInterfaceModell(String networkInterfaceName, String networkInterfaceDisplayName,
+			List<String> networkInterfaceInetAddresses) {
 		this.networkInterfaceName = networkInterfaceName;
 		this.networkInterfaceDisplayName = networkInterfaceDisplayName;
 		this.networkInterfaceInetAddresses = networkInterfaceInetAddresses;
 	}
 
-	public NetworkInterfaceModell(String networkInterfaceName, String networkInterfaceDisplayName, String... networkInterfaceInetAddresses) {
+	public NetworkInterfaceModell(String networkInterfaceName, String networkInterfaceDisplayName,
+			String... networkInterfaceInetAddresses) {
 		this(networkInterfaceName, networkInterfaceDisplayName, Arrays.asList(networkInterfaceInetAddresses));
 	}
 
@@ -37,7 +47,7 @@ public class NetworkInterfaceModell {
 			Matcher matcher = pattern.matcher(inetAddress.toString());
 			if (matcher.find()) {
 				final String group = matcher.group();
-				if(!group.equals("127.0.0.1"))
+				if (!group.equals("127.0.0.1"))
 					networkInterfaceInetAddresses.add(group);
 			}
 		}
