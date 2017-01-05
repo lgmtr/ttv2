@@ -75,7 +75,7 @@ public class GameState implements NotifyCallback {
 	}
 
 	/*
-	 * Recalculates the GameField if a new or unknown player joins the game
+	 * Recalculates the GameField if a unknown player joins the game
 	 */
 	private void recalculateGameField(ID newID) {
 		Set<Node> fingerSet = new HashSet<>(chordImpl.getFingerTable());
@@ -85,6 +85,7 @@ public class GameState implements NotifyCallback {
 		playerIDList.add(chordImpl.getID());
 		if (!playerIDList.contains(newID))
 			playerIDList.add(newID);
+		Collections.sort(playerIDList);
 		List<Player> newPlayerList = new ArrayList<>();
 		for (int i = 0; i < playerIDList.size(); i++) {
 			Player newPlayer;
