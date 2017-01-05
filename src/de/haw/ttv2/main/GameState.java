@@ -49,8 +49,10 @@ public class GameState implements NotifyCallback {
 		this.chordImpl = chordImpl;
 	}
 
-	/*
+	/**
 	 * Creates a GameField for a player
+	 * 
+	 * @param ownID
 	 */
 	public void createGameField(ID ownID) {
 		Set<Node> fingerSet = new HashSet<>(chordImpl.getFingerTable());
@@ -74,8 +76,10 @@ public class GameState implements NotifyCallback {
 		}
 	}
 
-	/*
+	/**
 	 * Recalculates the GameField if a new or unknown player joins the game
+	 * 
+	 * @param newID
 	 */
 	private void recalculateGameField(ID newID) {
 		Set<Node> fingerSet = new HashSet<>(chordImpl.getFingerTable());
@@ -111,6 +115,12 @@ public class GameState implements NotifyCallback {
 		GUIMessageQueue.getInstance().addMessage("Unknown Player added!");
 	}
 
+	/**
+	 * Chekcs if an ID is already contained in the list
+	 * 
+	 * @param id
+	 * @return
+	 */
 	private int containsInOldList(ID id) {
 		for (Player player : playerList)
 			if (player.getPlayerID().compareTo(id) == 0)
@@ -139,8 +149,12 @@ public class GameState implements NotifyCallback {
 		}
 	}
 
-	/*
+	/**
 	 * Returns if a ship was hit
+	 * 
+	 * @param target
+	 * @param actualTransactionID
+	 * @return
 	 */
 	private Boolean handleHit(ID target, int actualTransactionID) {
 		if (cheatMode)
@@ -200,6 +214,8 @@ public class GameState implements NotifyCallback {
 	}
 
 	/**
+	 * Handles the shoot at a player
+	 * 
 	 * @param source
 	 * @param target
 	 * @param hit
@@ -218,7 +234,7 @@ public class GameState implements NotifyCallback {
 	}
 
 	/**
-	 * 
+	 * Starts the game with a shot
 	 */
 	public void startGame() {
 		if (chordImpl.getPredecessorID().compareTo(chordImpl.getID()) > 0) {
@@ -228,7 +244,7 @@ public class GameState implements NotifyCallback {
 	}
 
 	/**
-	 * 
+	 * Shoots at a the player with the least remaining ships or the first player in the list
 	 */
 	private void shoot() {
 		if (playerList.size() > 0) {
@@ -250,6 +266,8 @@ public class GameState implements NotifyCallback {
 	}
 
 	/**
+	 * Selects a random value between min and max
+	 * 
 	 * @param min
 	 * @param max
 	 * @return
@@ -260,7 +278,7 @@ public class GameState implements NotifyCallback {
 	}
 
 	/**
-	 * 
+	 * Creates the Gamefield according to the count of players
 	 */
 	public void createGamefield() {
 		if (playerList == null)

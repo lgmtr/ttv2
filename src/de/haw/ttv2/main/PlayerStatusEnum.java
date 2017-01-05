@@ -2,6 +2,12 @@ package de.haw.ttv2.main;
 
 import javafx.scene.paint.Color;
 
+/**
+ * Colors for the player status, send in coap client to set the LED Color
+ * 
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ */
 public enum PlayerStatusEnum {
 	
 	GREEN(Color.GREEN, "g"),

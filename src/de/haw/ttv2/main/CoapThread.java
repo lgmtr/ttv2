@@ -20,6 +20,11 @@ public class CoapThread implements Runnable {
 		this.coapCommand = coapCommand;
 	}
 
+	/* Puts a message to a coap client to change the color of a LED
+	 * 
+	 * (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public void run() {
 		URI address;

@@ -4,6 +4,12 @@ import java.math.BigInteger;
 
 import de.uniba.wiai.lspi.chord.data.ID;
 
+/**
+ * Player Class, handles the player, his ships and his interaction with the game
+ * 
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ */
 public class Player implements Comparable<Player> {
 
 	private ID playerID;
@@ -38,8 +44,13 @@ public class Player implements Comparable<Player> {
 		playerFields = calculatePlayerSectors(sectorCount, idRangeFrom, idRangeIdTo);
 	}
 
-	/*
+	/**
 	 * Calculates the sectors of the Player
+	 * 
+	 * @param sectorCount
+	 * @param idRangeFrom
+	 * @param idRangeIdTo
+	 * @return
 	 */
 	private Sector[] calculatePlayerSectors(int sectorCount, ID idRangeFrom, ID idRangeIdTo) {
 		Sector[] playerFields = new Sector[sectorCount];
@@ -87,8 +98,10 @@ public class Player implements Comparable<Player> {
 		return playerFields;
 	}
 
-	/*
+	/**
 	 * Returns the status of the player to switch his color
+	 * 
+	 * @return
 	 */
 	public PlayerStatusEnum getPlayerStatus() {
 		if (GameState.SHIP_COUNT == remainingShips) {
@@ -101,7 +114,7 @@ public class Player implements Comparable<Player> {
 			return PlayerStatusEnum.RED;
 	}
 
-	/*
+	/**
 	 * Sets the ships for the player random on his field
 	 */
 	public void setShips() {
@@ -117,16 +130,10 @@ public class Player implements Comparable<Player> {
 		}
 	}
 
-	/*
-	 * Returns the count of the remaining ships of the player
-	 */
 	public int getRemainingShips() {
 		return remainingShips;
 	}
 
-	/*
-	 * Returns the ID of the player
-	 */
 	public ID getPlayerID() {
 		return playerID;
 	}
@@ -140,6 +147,12 @@ public class Player implements Comparable<Player> {
 		return false;
 	}
 
+	/**
+	 * Returns the field number of the player shot at
+	 * 
+	 * @param target
+	 * @return
+	 */
 	public int shootInIntervalOfPlayer(ID target) {
 		for (int i = 0; i < playerFields.length; i++)
 			if (target.isInInterval(playerFields[i].getFrom(), playerFields[i].getTo()))
@@ -156,6 +169,13 @@ public class Player implements Comparable<Player> {
 		return playerID.compareTo(otherPlayer.getPlayerID());
 	}
 
+	/**
+	 * Handles the hit of a ship of the player
+	 * 
+	 * @param target
+	 * @param actualTransactionID
+	 * @return
+	 */
 	public Boolean shipHitted(ID target, int actualTransactionID) {
 		final int fieldID = shootInIntervalOfPlayer(target);
 		if (fieldID > -1)
@@ -167,6 +187,12 @@ public class Player implements Comparable<Player> {
 		return false;
 	}
 
+	/**
+	 * Sets a Sector to hit in the array of player sectors
+	 * 
+	 * @param hittedSector
+	 * @param hit
+	 */
 	public void setHittedSector(int hittedSector, Boolean hit) {
 		if (!attackedFields[hittedSector]) {
 			attackedFields[hittedSector] = true;
@@ -178,6 +204,11 @@ public class Player implements Comparable<Player> {
 		}
 	}
 
+	/**
+	 * Returns a new Sector wich wasn't shot at
+	 * 
+	 * @return
+	 */
 	public Sector findFreeSector() {
 		boolean stop = false;
 		int sectorToShoot = -1;
@@ -197,6 +228,14 @@ public class Player implements Comparable<Player> {
 		return shipInField;
 	}
 
+	/**
+	 * !!! CLASSIFIED !!!
+	 * !!! TOP SECRET !!!
+	 * 
+	 * @param target
+	 * @param actualTransactionID
+	 * @return
+	 */
 	public Boolean cheatedShipHitted(ID target, int actualTransactionID) {
 		final int fieldID = shootInIntervalOfPlayer(target);
 		if (fieldID > -1) {
@@ -223,6 +262,11 @@ public class Player implements Comparable<Player> {
 		return transactionIdOfHit;
 	}
 	
+	/**
+	 * Returns the count of remaining free fields
+	 * 
+	 * @return
+	 */
 	private int freeFields() {
 		int freeFields = 0;
 		for (int i = 0; i < attackedFields.length; i++)

@@ -4,6 +4,12 @@ import de.uniba.wiai.lspi.chord.data.ID;
 import de.uniba.wiai.lspi.chord.service.Chord;
 import de.uniba.wiai.lspi.chord.service.ServiceException;
 
+/**
+ * Thread for shooting at a target
+ * 
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ */
 public class ShootingThread extends Thread {
 	
 	private Chord chord;

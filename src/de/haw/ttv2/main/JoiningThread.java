@@ -6,6 +6,12 @@ import java.util.Set;
 import de.uniba.wiai.lspi.chord.com.Node;
 import de.uniba.wiai.lspi.chord.service.impl.ChordImpl;
 
+/**
+ * Handles the Set of joined players
+ * 
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ */
 public class JoiningThread implements Runnable{
 	
 	private boolean running = true;
@@ -18,6 +24,12 @@ public class JoiningThread implements Runnable{
 		this.chord = chord;
 	}
 
+	/* 
+	 * Handles the Set for joining players
+	 * 
+	 * (non-Javadoc)
+	 * @see java.lang.Runnable#run()
+	 */
 	@Override
 	public void run() {
 		while(running){
@@ -31,8 +43,10 @@ public class JoiningThread implements Runnable{
 		
 	}
 	
-	/*
+	/**
 	 * Put the Thread to sleep for a specified amount of time
+	 * 
+	 * @param time
 	 */
 	private void waitTime(int time) {
 		try {

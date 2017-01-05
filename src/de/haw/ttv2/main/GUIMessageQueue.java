@@ -3,6 +3,12 @@ package de.haw.ttv2.main;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handles the GUI-Message queue
+ * 
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ */
 public class GUIMessageQueue {
 
 	private static GUIMessageQueue instance = null;
@@ -17,8 +23,10 @@ public class GUIMessageQueue {
 		return instance;
 	}
 
-	/*
+	/**
 	 * Returns the first Message in the queue
+	 * 
+	 * @return
 	 */
 	public String getFirstMessage() {
 		String returnString = null;
@@ -29,8 +37,10 @@ public class GUIMessageQueue {
 		return returnString;
 	}
 	
-	/*
+	/**
 	 * Adds a message to the queue
+	 * 
+	 * @param message
 	 */
 	public void addMessage(String message) {
 		this.message.add(this.message.size(), message);

@@ -7,6 +7,13 @@ import java.util.Map;
 
 import de.uniba.wiai.lspi.chord.data.ID;
 
+/**
+ *  
+ * 
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ *
+ */
 public class BroadcastLog {
 
 	private static BroadcastLog instance;
@@ -66,8 +73,13 @@ public class BroadcastLog {
 		return instance;
 	}
 
-	/*
+	/**
 	 * Adds a new BroadcastMsg to the messageLog
+	 * 
+	 * @param source
+	 * @param target
+	 * @param hit
+	 * @param transaction
 	 */
 	public void addBroadcast(ID source, ID target, Boolean hit, Integer transaction) {
 		final BroadcastMsg bcm = new BroadcastMsg(source, target, hit, transaction);
@@ -99,15 +111,14 @@ public class BroadcastLog {
 		return hittingMap;
 	}
 	
-	/*
-	 * Returns a map of a List of Broadcast Messages
-	 */
 	public Map<ID, List<BroadcastMsg>> getLogMap(){
 		return logMap;
 	}
-	
-	/*
+
+	/**
 	 * Checks if someone has lost his last ship
+	 * 
+	 * @return
 	 */
 	public ID hasSomeoneLost(){
 		Map<ID, List<BroadcastMsg>> hittingMap = getHittingMap();
@@ -118,7 +129,11 @@ public class BroadcastLog {
 		return null;
 	}
 
-	// Only for Tests
+	/**
+	 * Only for Tests
+	 * 
+	 * @return
+	 */
 	public String getMessageWithDiffrentSrc() {
 		List<BroadcastMsg> bcmList = new ArrayList<>();
 		for (int i = 0; i < messageLogOfHits.size(); i++) {
@@ -137,14 +152,22 @@ public class BroadcastLog {
 		return returnString;
 	}
 
-	// Only for Tests
+	/**
+	 * Only for Tests
+	 * 
+	 * @return
+	 */
 	public BroadcastMsg getLastBroadcast() {
 		if (messageLog.size() < 1)
 			return null;
 		return messageLog.get(messageLog.size() - 1);
 	}
 
-	// Only for Tests
+	/**
+	 * Only for Tests
+	 * 
+	 * @return
+	 */
 	private String getBroadcastMsgFormatted(BroadcastMsg bc) {
 		if (messageLog.size() < 1)
 			return null;
@@ -152,6 +175,12 @@ public class BroadcastLog {
 				+ "\nHit: " + bc.getHit().toString() + WIN_LOSE_SEPERATOR;
 	}
 
+	/**
+	 * Returns the last boradcast message if someone has lost
+	 * 
+	 * @param hasSomeLose
+	 * @return
+	 */
 	public BroadcastMsg getLastBroadcast(ID hasSomeLose) {
 		final List<BroadcastMsg> bcList = hittingMap.get(hasSomeLose);
 		if (bcList.size() > 0)

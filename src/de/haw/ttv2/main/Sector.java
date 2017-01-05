@@ -4,6 +4,12 @@ import java.math.BigInteger;
 
 import de.uniba.wiai.lspi.chord.data.ID;
 
+/**
+ * Represents one Sector in a specific range
+ * 
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ */
 public class Sector {
 
 	private ID from;

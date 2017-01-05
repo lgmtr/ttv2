@@ -8,6 +8,12 @@ import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
 import de.haw.ttv2.main.PlayerStatusEnum;
 
+/**
+ * Test class to test the coap put method to change the LED color on a local dummy
+ * 
+ * @author Johann Bronsch
+ * @author Sascha Waltz
+ */
 public class CoAPTestMain {
 	
 	public static void main(String[] args) throws URISyntaxException {
